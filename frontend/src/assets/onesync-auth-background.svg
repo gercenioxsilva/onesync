@@ -1,0 +1,44 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1600" y2="1000" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F172A"/>
+      <stop offset="0.5" stop-color="#172554"/>
+      <stop offset="1" stop-color="#0F766E"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(280 220) rotate(38.2) scale(420 290)">
+      <stop stop-color="#38BDF8" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#38BDF8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1230 180) rotate(158) scale(360 240)">
+      <stop stop-color="#22C55E" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#22C55E" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowC" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1180 760) rotate(-145) scale(520 320)">
+      <stop stop-color="#60A5FA" stop-opacity="0.26"/>
+      <stop offset="1" stop-color="#60A5FA" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <rect width="1600" height="1000" fill="url(#glowA)"/>
+  <rect width="1600" height="1000" fill="url(#glowB)"/>
+  <rect width="1600" height="1000" fill="url(#glowC)"/>
+
+  <g opacity="0.12">
+    <circle cx="1320" cy="160" r="96" stroke="white" stroke-width="2"/>
+    <circle cx="1320" cy="160" r="52" stroke="white" stroke-width="2"/>
+    <circle cx="1320" cy="160" r="8" fill="white"/>
+    <path d="M1242 160C1242 116.922 1276.92 82 1320 82" stroke="white" stroke-width="4" stroke-linecap="round"/>
+    <path d="M1398 160C1398 203.078 1363.08 238 1320 238" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <g opacity="0.18">
+    <rect x="120" y="118" width="460" height="250" rx="32" fill="white" fill-opacity="0.05"/>
+    <rect x="760" y="560" width="620" height="220" rx="32" fill="white" fill-opacity="0.04"/>
+    <rect x="240" y="620" width="340" height="150" rx="28" fill="white" fill-opacity="0.05"/>
+  </g>
+
+  <g opacity="0.35">
+    <path d="M0 820C170 740 317 724 478 769C651 817 771 924 971 915C1142 908 1290 817 1600 695" stroke="white" stroke-opacity="0.14" stroke-width="2"/>
+    <path d="M0 880C162 807 348 782 500 820C703 871 802 973 997 963C1193 953 1360 856 1600 780" stroke="white" stroke-opacity="0.1" stroke-width="2"/>
+  </g>
+</svg>

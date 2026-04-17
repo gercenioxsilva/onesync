@@ -1,0 +1,14 @@
+<svg width="240" height="64" viewBox="0 0 240 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="pulseA" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0284C7"/>
+      <stop offset="1" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#pulseA)"/>
+  <path d="M12 35H22L27 24L33 41L39 29H52" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="22" cy="35" r="2.6" fill="white"/>
+  <circle cx="39" cy="29" r="2.6" fill="white"/>
+  <text x="76" y="28" fill="#0F172A" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">OneSync</text>
+  <text x="76" y="46" fill="#475569" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="11" font-weight="500">Cadence, growth and clarity</text>
+</svg>

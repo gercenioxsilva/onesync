@@ -1,0 +1,16 @@
+<svg width="240" height="64" viewBox="0 0 240 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="orbitA" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1D4ED8"/>
+      <stop offset="1" stop-color="#0EA5E9"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#orbitA)"/>
+  <circle cx="32" cy="32" r="13" fill="white" fill-opacity="0.95"/>
+  <path d="M17 32C17 23.716 23.716 17 32 17" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <path d="M47 32C47 40.284 40.284 47 32 47" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="16" cy="32" r="3" fill="white"/>
+  <circle cx="48" cy="32" r="3" fill="white"/>
+  <text x="76" y="28" fill="#0F172A" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">OneSync</text>
+  <text x="76" y="46" fill="#475569" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="11" font-weight="500">1:1 • PDI • AI Insights</text>
+</svg>
