@@ -1,6 +1,6 @@
+import datetime
 import json
 import logging
-import datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
