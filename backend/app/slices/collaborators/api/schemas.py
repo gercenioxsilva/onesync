@@ -1,5 +1,5 @@
-import re
 from datetime import datetime
+import re
 
 from pydantic import BaseModel, Field, field_validator
 
