@@ -1,6 +1,6 @@
 import json
 import logging
-from datetime import UTC, datetime
+import datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -100,7 +100,7 @@ class AIProcessingService:
             log.input_tokens = result["input_tokens"]
             log.output_tokens = result["output_tokens"]
             log.estimated_cost = result["cost"]
-            log.updated_at = datetime.now(UTC)
+            log.updated_at = datetime.datetime.now(datetime.UTC)
 
             # Update 1:1 with extracted data
             one_on_one.summary = result["summary"]
@@ -217,7 +217,7 @@ class AIProcessingService:
             if key in allowed_fields and value is not None:
                 setattr(config, key, value)
 
-        config.updated_at = datetime.now(UTC)
+        config.updated_at = datetime.datetime.now(datetime.UTC)
         self.db.commit()
         self.db.refresh(config)
 
