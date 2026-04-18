@@ -8,11 +8,11 @@ from pathlib import Path
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.slices.one_on_ones.infrastructure.models import OneOnOneModel
-from app.slices.pdis.infrastructure.models import PdiModel
 from app.slices.collaborators.domain.entities import RiskLevel
 from app.slices.collaborators.infrastructure.models import CollaboratorModel
 from app.slices.collaborators.infrastructure.repositories import CollaboratorRepository
+from app.slices.one_on_ones.infrastructure.models import OneOnOneModel
+from app.slices.pdis.infrastructure.models import PdiModel
 
 
 class CollaboratorService:

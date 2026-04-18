@@ -1,7 +1,6 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from fastapi import Depends
 
 from app.core.auth import (
     create_access_token,

@@ -80,18 +80,18 @@ class AIProcessingLogModel(Base):
     extracted_mood_score: Mapped[int] = mapped_column(default=0)
     extracted_risk_signal: Mapped[str] = mapped_column(String(20), default="NEUTRO")
     extracted_key_points: Mapped[str] = mapped_column(Text, default="[]")  # JSON array
-    
+
     # Cost tracking (for OpenAI: ~$0.01 per 1k input tokens, $0.03 per 1k output tokens)
     input_tokens: Mapped[int] = mapped_column(default=0)
     output_tokens: Mapped[int] = mapped_column(default=0)
     estimated_cost: Mapped[float] = mapped_column(default=0.0)
-    
+
     # Error handling
     error_message: Mapped[str] = mapped_column(Text, default="")
     retry_count: Mapped[int] = mapped_column(default=0)
-    
+
     # User who triggered processing
     processed_by_user_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
-    
+
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
