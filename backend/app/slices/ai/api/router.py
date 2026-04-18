@@ -7,8 +7,8 @@ from app.core.auth import AuthContext, get_current_user, require_roles
 from app.core.database import get_db
 from app.slices.ai.api.schemas import (
     AIConfigCreate,
-    AIConfigUpdate,
     AIConfigOut,
+    AIConfigUpdate,
     AIProcessingLogOut,
     ProcessOneOnOneRequest,
     ProcessOneOnOneResponse,
