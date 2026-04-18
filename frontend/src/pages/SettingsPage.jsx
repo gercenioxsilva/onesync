@@ -103,7 +103,9 @@ export default function SettingsPage() {
           collaborator_quota: res.data.collaborator_quota,
         })
       })
-      .catch(() => setTenantFeedback({ severity: 'error', message: 'Erro ao carregar dados da empresa.' }))
+      .catch(() =>
+        setTenantFeedback({ severity: 'error', message: 'Erro ao carregar dados da empresa.' })
+      )
       .finally(() => setTenantLoading(false))
   }
 
@@ -121,7 +123,10 @@ export default function SettingsPage() {
       setUsers((current) => [...current, created.data])
       setInviteOpen(false)
       setInviteForm(emptyInvite)
-      setUsersFeedback({ severity: 'success', message: `Usuário ${inviteForm.email} convidado com sucesso.` })
+      setUsersFeedback({
+        severity: 'success',
+        message: `Usuário ${inviteForm.email} convidado com sucesso.`,
+      })
     } catch (err) {
       setUsersFeedback({
         severity: 'error',
@@ -223,7 +228,11 @@ export default function SettingsPage() {
       {tab === 0 && (
         <Box>
           {usersFeedback && (
-            <Alert severity={usersFeedback.severity} sx={{ mb: 2 }} onClose={() => setUsersFeedback(null)}>
+            <Alert
+              severity={usersFeedback.severity}
+              sx={{ mb: 2 }}
+              onClose={() => setUsersFeedback(null)}
+            >
               {usersFeedback.message}
             </Alert>
           )}
@@ -233,7 +242,10 @@ export default function SettingsPage() {
               <Button
                 variant="contained"
                 startIcon={<PersonAddIcon />}
-                onClick={() => { setInviteOpen(true); setUsersFeedback(null) }}
+                onClick={() => {
+                  setInviteOpen(true)
+                  setUsersFeedback(null)
+                }}
               >
                 Convidar usuário
               </Button>
@@ -261,21 +273,34 @@ export default function SettingsPage() {
                     <TableRow key={u.id}>
                       <TableCell>
                         <Stack direction="row" alignItems="center" spacing={1.5}>
-                          <Avatar sx={{ width: 32, height: 32, fontSize: 13, bgcolor: isOwner ? 'error.main' : 'primary.main' }}>
+                          <Avatar
+                            sx={{
+                              width: 32,
+                              height: 32,
+                              fontSize: 13,
+                              bgcolor: isOwner ? 'error.main' : 'primary.main',
+                            }}
+                          >
                             {u.full_name?.slice(0, 2).toUpperCase()}
                           </Avatar>
                           <Box>
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
                               {u.full_name}
                               {isSelf && (
-                                <Chip label="você" size="small" sx={{ ml: 1, height: 18, fontSize: 10 }} />
+                                <Chip
+                                  label="você"
+                                  size="small"
+                                  sx={{ ml: 1, height: 18, fontSize: 10 }}
+                                />
                               )}
                             </Typography>
                           </Box>
                         </Stack>
                       </TableCell>
                       <TableCell>
-                        <Typography variant="body2" color="text.secondary">{u.email}</Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {u.email}
+                        </Typography>
                       </TableCell>
                       <TableCell>
                         {editingRole ? (
@@ -288,13 +313,21 @@ export default function SettingsPage() {
                               sx={{ minWidth: 130 }}
                             >
                               {INVITABLE_ROLES.map((r) => (
-                                <MenuItem key={r} value={r}>{ROLE_LABELS[r]}</MenuItem>
+                                <MenuItem key={r} value={r}>
+                                  {ROLE_LABELS[r]}
+                                </MenuItem>
                               ))}
                             </TextField>
-                            <Button size="small" variant="contained" onClick={() => handleSaveRole(u.id)}>
+                            <Button
+                              size="small"
+                              variant="contained"
+                              onClick={() => handleSaveRole(u.id)}
+                            >
                               Salvar
                             </Button>
-                            <Button size="small" onClick={() => setRoleEditId(null)}>Cancelar</Button>
+                            <Button size="small" onClick={() => setRoleEditId(null)}>
+                              Cancelar
+                            </Button>
                           </Stack>
                         ) : (
                           <Chip
@@ -331,15 +364,21 @@ export default function SettingsPage() {
                             {!isOwner && !isSelf && (
                               <Tooltip title={u.is_active ? 'Desativar' : 'Ativar'}>
                                 <IconButton size="small" onClick={() => handleToggleActive(u)}>
-                                  {u.is_active
-                                    ? <BlockIcon fontSize="small" color="warning" />
-                                    : <CheckCircleIcon fontSize="small" color="success" />}
+                                  {u.is_active ? (
+                                    <BlockIcon fontSize="small" color="warning" />
+                                  ) : (
+                                    <CheckCircleIcon fontSize="small" color="success" />
+                                  )}
                                 </IconButton>
                               </Tooltip>
                             )}
                             {currentUser?.role === 'OWNER' && !isOwner && !isSelf && (
                               <Tooltip title="Remover usuário">
-                                <IconButton size="small" color="error" onClick={() => setDeleteConfirm(u)}>
+                                <IconButton
+                                  size="small"
+                                  color="error"
+                                  onClick={() => setDeleteConfirm(u)}
+                                >
                                   <DeleteIcon fontSize="small" />
                                 </IconButton>
                               </Tooltip>
@@ -352,7 +391,11 @@ export default function SettingsPage() {
                 })}
                 {!usersLoading && users.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={canManage ? 5 : 4} align="center" sx={{ py: 4, color: 'text.secondary' }}>
+                    <TableCell
+                      colSpan={canManage ? 5 : 4}
+                      align="center"
+                      sx={{ py: 4, color: 'text.secondary' }}
+                    >
                       Nenhum usuário encontrado.
                     </TableCell>
                   </TableRow>
@@ -367,15 +410,28 @@ export default function SettingsPage() {
       {tab === 1 && (
         <Box>
           {tenantFeedback && (
-            <Alert severity={tenantFeedback.severity} sx={{ mb: 2 }} onClose={() => setTenantFeedback(null)}>
+            <Alert
+              severity={tenantFeedback.severity}
+              sx={{ mb: 2 }}
+              onClose={() => setTenantFeedback(null)}
+            >
               {tenantFeedback.message}
             </Alert>
           )}
 
           {tenant && (
             <Paper sx={{ p: 3, borderRadius: 1, maxWidth: 640 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6" sx={{ fontWeight: 700 }}>Dados da empresa</Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  mb: 2,
+                }}
+              >
+                <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                  Dados da empresa
+                </Typography>
                 {canManage && !editMode && (
                   <Button startIcon={<EditIcon />} size="small" onClick={() => setEditMode(true)}>
                     Editar
@@ -385,11 +441,22 @@ export default function SettingsPage() {
 
               <Stack spacing={2}>
                 {/* Readonly fields */}
-                <Box sx={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: 1, alignItems: 'center' }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>CNPJ</Typography>
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: '160px 1fr',
+                    gap: 1,
+                    alignItems: 'center',
+                  }}
+                >
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                    CNPJ
+                  </Typography>
                   <Typography variant="body2">{tenant.cnpj}</Typography>
 
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>Plano</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                    Plano
+                  </Typography>
                   <Box>
                     <Chip
                       label={tenant.plan_type === 'FREE' ? 'Free' : 'Custom'}
@@ -398,8 +465,12 @@ export default function SettingsPage() {
                     />
                   </Box>
 
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>Criado em</Typography>
-                  <Typography variant="body2">{new Date(tenant.created_at).toLocaleDateString('pt-BR')}</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                    Criado em
+                  </Typography>
+                  <Typography variant="body2">
+                    {new Date(tenant.created_at).toLocaleDateString('pt-BR')}
+                  </Typography>
                 </Box>
 
                 <Divider />
@@ -435,34 +506,64 @@ export default function SettingsPage() {
                       label="Cota de colaboradores"
                       type="number"
                       value={tenantForm.collaborator_quota}
-                      onChange={(e) => setTenantForm({ ...tenantForm, collaborator_quota: e.target.value })}
+                      onChange={(e) =>
+                        setTenantForm({ ...tenantForm, collaborator_quota: e.target.value })
+                      }
                       fullWidth
                     />
                     <Stack direction="row" spacing={1}>
-                      <Button variant="contained" onClick={handleSaveTenant} disabled={tenantLoading}>
+                      <Button
+                        variant="contained"
+                        onClick={handleSaveTenant}
+                        disabled={tenantLoading}
+                      >
                         {tenantLoading ? 'Salvando...' : 'Salvar'}
                       </Button>
-                      <Button onClick={() => { setEditMode(false); setTenantFeedback(null) }}>
+                      <Button
+                        onClick={() => {
+                          setEditMode(false)
+                          setTenantFeedback(null)
+                        }}
+                      >
                         Cancelar
                       </Button>
                     </Stack>
                   </Stack>
                 ) : (
-                  <Box sx={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: 1, alignItems: 'start' }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>Nome</Typography>
+                  <Box
+                    sx={{
+                      display: 'grid',
+                      gridTemplateColumns: '160px 1fr',
+                      gap: 1,
+                      alignItems: 'start',
+                    }}
+                  >
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                      Nome
+                    </Typography>
                     <Typography variant="body2">{tenant.name}</Typography>
 
-                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>Email</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                      Email
+                    </Typography>
                     <Typography variant="body2">{tenant.email}</Typography>
 
-                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>Endereço</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                      Endereço
+                    </Typography>
                     <Typography variant="body2">{tenant.address || '—'}</Typography>
 
-                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>Telefone</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                      Telefone
+                    </Typography>
                     <Typography variant="body2">{tenant.phone || '—'}</Typography>
 
-                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>Cota</Typography>
-                    <Typography variant="body2">{tenant.collaborator_quota} colaboradores</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                      Cota
+                    </Typography>
+                    <Typography variant="body2">
+                      {tenant.collaborator_quota} colaboradores
+                    </Typography>
                   </Box>
                 )}
               </Stack>
@@ -471,10 +572,8 @@ export default function SettingsPage() {
         </Box>
       )}
 
-        {/* ──────────── AI TAB ──────────── */}
-        {tab === 2 && (
-          <AIConfigTab />
-        )}
+      {/* ──────────── AI TAB ──────────── */}
+      {tab === 2 && <AIConfigTab />}
 
       {/* ──────────── INVITE DIALOG ──────────── */}
       <Dialog open={inviteOpen} onClose={() => setInviteOpen(false)} maxWidth="sm" fullWidth>
@@ -502,7 +601,9 @@ export default function SettingsPage() {
               fullWidth
             >
               {INVITABLE_ROLES.map((r) => (
-                <MenuItem key={r} value={r}>{ROLE_LABELS[r]}</MenuItem>
+                <MenuItem key={r} value={r}>
+                  {ROLE_LABELS[r]}
+                </MenuItem>
               ))}
             </TextField>
             <TextField
@@ -520,7 +621,9 @@ export default function SettingsPage() {
           <Button
             variant="contained"
             onClick={handleInvite}
-            disabled={inviteLoading || !inviteForm.full_name || !inviteForm.email || !inviteForm.password}
+            disabled={
+              inviteLoading || !inviteForm.full_name || !inviteForm.email || !inviteForm.password
+            }
           >
             {inviteLoading ? 'Convidando...' : 'Convidar'}
           </Button>
@@ -532,13 +635,15 @@ export default function SettingsPage() {
         <DialogTitle>Remover usuário</DialogTitle>
         <DialogContent>
           <Typography>
-            Deseja remover permanentemente <strong>{deleteConfirm?.full_name}</strong> ({deleteConfirm?.email})?
-            Esta ação não pode ser desfeita.
+            Deseja remover permanentemente <strong>{deleteConfirm?.full_name}</strong> (
+            {deleteConfirm?.email})? Esta ação não pode ser desfeita.
           </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteConfirm(null)}>Cancelar</Button>
-          <Button color="error" variant="contained" onClick={handleDelete}>Remover</Button>
+          <Button color="error" variant="contained" onClick={handleDelete}>
+            Remover
+          </Button>
         </DialogActions>
       </Dialog>
     </Container>

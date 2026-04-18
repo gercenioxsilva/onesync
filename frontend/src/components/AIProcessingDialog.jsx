@@ -82,9 +82,7 @@ export default function AIProcessingDialog({ open, onClose, oneOnOneId, onSucces
       <DialogContent sx={{ pt: 2 }}>
         {!result ? (
           <Stack spacing={2}>
-            {feedback && (
-              <Alert severity={feedback.severity}>{feedback.message}</Alert>
-            )}
+            {feedback && <Alert severity={feedback.severity}>{feedback.message}</Alert>}
 
             <Box>
               <Typography variant="body2" sx={{ mb: 1, fontWeight: 600 }}>
@@ -99,11 +97,7 @@ export default function AIProcessingDialog({ open, onClose, oneOnOneId, onSucces
                 fullWidth
                 disabled={processing}
                 error={!!error}
-                helperText={
-                  error
-                    ? error
-                    : `${transcription.length} caracteres • Mínimo 10`
-                }
+                helperText={error ? error : `${transcription.length} caracteres • Mínimo 10`}
               />
             </Box>
 
@@ -127,18 +121,14 @@ export default function AIProcessingDialog({ open, onClose, oneOnOneId, onSucces
           </Stack>
         ) : (
           <Stack spacing={2}>
-            <Alert severity="success">
-              ✨ Dados extraídos com sucesso!
-            </Alert>
+            <Alert severity="success">✨ Dados extraídos com sucesso!</Alert>
 
             <Box>
               <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
                 Resumo:
               </Typography>
               <Paper sx={{ p: 1.5, bgcolor: '#f9f9f9' }}>
-                <Typography variant="body2">
-                  {result.extracted_summary}
-                </Typography>
+                <Typography variant="body2">{result.extracted_summary}</Typography>
               </Paper>
             </Box>
 
@@ -147,9 +137,7 @@ export default function AIProcessingDialog({ open, onClose, oneOnOneId, onSucces
                 Próximos passos:
               </Typography>
               <Paper sx={{ p: 1.5, bgcolor: '#f9f9f9' }}>
-                <Typography variant="body2">
-                  {result.extracted_next_steps}
-                </Typography>
+                <Typography variant="body2">{result.extracted_next_steps}</Typography>
               </Paper>
             </Box>
 
@@ -158,9 +146,7 @@ export default function AIProcessingDialog({ open, onClose, oneOnOneId, onSucces
                 <Typography variant="caption" color="text.secondary">
                   Sentimento
                 </Typography>
-                <Typography variant="h6">
-                  {result.extracted_mood_score}/10
-                </Typography>
+                <Typography variant="h6">{result.extracted_mood_score}/10</Typography>
               </Box>
               <Box>
                 <Typography variant="caption" color="text.secondary">
@@ -172,8 +158,8 @@ export default function AIProcessingDialog({ open, onClose, oneOnOneId, onSucces
                     result.extracted_risk_signal === 'RISCO'
                       ? 'error'
                       : result.extracted_risk_signal === 'OPORTUNIDADE'
-                      ? 'success'
-                      : 'default'
+                        ? 'success'
+                        : 'default'
                   }
                   size="small"
                   sx={{ mt: 0.5 }}
@@ -194,9 +180,7 @@ export default function AIProcessingDialog({ open, onClose, oneOnOneId, onSucces
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={handleClose}>
-          {result ? 'Fechar' : 'Cancelar'}
-        </Button>
+        <Button onClick={handleClose}>{result ? 'Fechar' : 'Cancelar'}</Button>
 
         {!result && (
           <Button
@@ -210,10 +194,7 @@ export default function AIProcessingDialog({ open, onClose, oneOnOneId, onSucces
         )}
 
         {result && (
-          <Button
-            variant="contained"
-            onClick={handleConfirm}
-          >
+          <Button variant="contained" onClick={handleConfirm}>
             Confirmar e usar dados
           </Button>
         )}

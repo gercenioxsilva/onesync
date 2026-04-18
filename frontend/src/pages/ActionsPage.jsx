@@ -85,11 +85,16 @@ function ActionCard({ item, onDelete, onMove: _onMove }) {
       <Typography variant="body2" color="text.secondary" sx={{ my: 0.5 }}>
         {[item.owner, item.due_date].filter(Boolean).join(' • ')}
       </Typography>
-      {item.category ? (
-        <Chip label={item.category} size="small" variant="outlined" />
-      ) : null}
+      {item.category ? <Chip label={item.category} size="small" variant="outlined" /> : null}
       <Box sx={{ mt: 1.5, display: 'flex', gap: 1 }}>
-        <Button size="small" color="error" onClick={(e) => { e.stopPropagation(); onDelete(item.id) }}>
+        <Button
+          size="small"
+          color="error"
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete(item.id)
+          }}
+        >
           Excluir
         </Button>
       </Box>
@@ -107,10 +112,7 @@ function ActionColumn({ column, actions, onDelete }) {
   const columnActions = actions.filter((item) => item.status === column.key)
 
   return (
-    <Paper
-      ref={setNodeRef}
-      sx={{ p: 2.5, borderRadius: 1, minHeight: 360, bgcolor: '#fafafa' }}
-    >
+    <Paper ref={setNodeRef} sx={{ p: 2.5, borderRadius: 1, minHeight: 360, bgcolor: '#fafafa' }}>
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
         {column.title}
       </Typography>
@@ -141,12 +143,15 @@ export default function ActionsPage() {
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    }),
+    })
   )
 
   useEffect(() => {
     loadActions()
-    collaboratorsAPI.list().then((res) => setCollaborators(res.data)).catch(() => {})
+    collaboratorsAPI
+      .list()
+      .then((res) => setCollaborators(res.data))
+      .catch(() => {})
   }, [])
 
   const loadActions = () => {
@@ -218,9 +223,7 @@ export default function ActionsPage() {
     if (overColumnKey && activeItem.status !== overColumnKey) {
       // Optimistic update
       setActions((current) =>
-        current.map((item) =>
-          item.id === active.id ? { ...item, status: overColumnKey } : item,
-        ),
+        current.map((item) => (item.id === active.id ? { ...item, status: overColumnKey } : item))
       )
       // Save to backend
       actionsAPI.updateStatus(active.id, overColumnKey).catch(() => loadActions())
@@ -233,12 +236,20 @@ export default function ActionsPage() {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3, gap: 2, flexWrap: 'wrap' }}>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'space-between', mb: 3, gap: 2, flexWrap: 'wrap' }}
+      >
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>Ações e checkpoints</Typography>
-          <Typography color="text.secondary">Backlog gerencial com responsáveis, prazos e status.</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+            Ações e checkpoints
+          </Typography>
+          <Typography color="text.secondary">
+            Backlog gerencial com responsáveis, prazos e status.
+          </Typography>
         </Box>
-        <Button variant="contained" onClick={handleOpenDialog}>+ Nova ação</Button>
+        <Button variant="contained" onClick={handleOpenDialog}>
+          + Nova ação
+        </Button>
       </Box>
 
       <DndContext
@@ -258,22 +269,22 @@ export default function ActionsPage() {
         <DragOverlay>
           {activeId && actions.find((a) => a.id === activeId)
             ? (() => {
-              const item = actions.find((a) => a.id === activeId)
-              return (
-                <Box
-                  sx={{
-                    p: 2,
-                    borderRadius: 1,
-                    border: '1px solid #e5e7eb',
-                    bgcolor: '#fff',
-                    boxShadow: 3,
-                    zIndex: 1000,
-                  }}
-                >
-                  <Typography sx={{ fontWeight: 600 }}>{item.title}</Typography>
-                </Box>
-              )
-            })()
+                const item = actions.find((a) => a.id === activeId)
+                return (
+                  <Box
+                    sx={{
+                      p: 2,
+                      borderRadius: 1,
+                      border: '1px solid #e5e7eb',
+                      bgcolor: '#fff',
+                      boxShadow: 3,
+                      zIndex: 1000,
+                    }}
+                  >
+                    <Typography sx={{ fontWeight: 600 }}>{item.title}</Typography>
+                  </Box>
+                )
+              })()
             : null}
         </DragOverlay>
       </DndContext>
@@ -307,18 +318,30 @@ export default function ActionsPage() {
             />
             <FormControl fullWidth>
               <InputLabel>Categoria</InputLabel>
-              <Select value={form.category} label="Categoria" onChange={handleFormChange('category')}>
+              <Select
+                value={form.category}
+                label="Categoria"
+                onChange={handleFormChange('category')}
+              >
                 <MenuItem value="">Sem categoria</MenuItem>
                 {CATEGORIES.map((cat) => (
-                  <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+                  <MenuItem key={cat} value={cat}>
+                    {cat}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
             <FormControl fullWidth>
               <InputLabel>Status inicial</InputLabel>
-              <Select value={form.status} label="Status inicial" onChange={handleFormChange('status')}>
+              <Select
+                value={form.status}
+                label="Status inicial"
+                onChange={handleFormChange('status')}
+              >
                 {STATUS_COLUMNS.map((col) => (
-                  <MenuItem key={col.key} value={col.key}>{col.title}</MenuItem>
+                  <MenuItem key={col.key} value={col.key}>
+                    {col.title}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -332,18 +355,24 @@ export default function ActionsPage() {
                 >
                   <MenuItem value="">Nenhum</MenuItem>
                   {collaborators.map((c) => (
-                    <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>
+                    <MenuItem key={c.id} value={c.id}>
+                      {c.name}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>
             )}
             {formError && (
-              <Typography color="error" variant="body2">{formError}</Typography>
+              <Typography color="error" variant="body2">
+                {formError}
+              </Typography>
             )}
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} disabled={saving}>Cancelar</Button>
+          <Button onClick={handleCloseDialog} disabled={saving}>
+            Cancelar
+          </Button>
           <Button onClick={handleSave} variant="contained" disabled={saving}>
             {saving ? 'Salvando...' : 'Salvar'}
           </Button>

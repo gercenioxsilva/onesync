@@ -63,7 +63,10 @@ export default function AuthPage() {
       await login(loginForm.email, loginForm.password)
       finishLogin()
     } catch (error) {
-      setFeedback({ severity: 'error', message: error?.response?.data?.detail || 'Falha no login.' })
+      setFeedback({
+        severity: 'error',
+        message: error?.response?.data?.detail || 'Falha no login.',
+      })
     } finally {
       setLoading(false)
     }
@@ -76,7 +79,10 @@ export default function AuthPage() {
       await loginGoogle(loginForm.googleIdToken, loginForm.tenantCnpj)
       finishLogin()
     } catch (error) {
-      setFeedback({ severity: 'error', message: error?.response?.data?.detail || 'Falha no login com Google.' })
+      setFeedback({
+        severity: 'error',
+        message: error?.response?.data?.detail || 'Falha no login com Google.',
+      })
     } finally {
       setLoading(false)
     }
@@ -90,7 +96,10 @@ export default function AuthPage() {
         ...tenantForm,
         collaborator_quota: Number(tenantForm.collaborator_quota),
       })
-      setFeedback({ severity: 'success', message: 'Tenant criado com sucesso. Faça login com o owner cadastrado.' })
+      setFeedback({
+        severity: 'success',
+        message: 'Tenant criado com sucesso. Faça login com o owner cadastrado.',
+      })
       setTab(0)
       setLoginForm((current) => ({
         ...current,
@@ -99,7 +108,10 @@ export default function AuthPage() {
         password: tenantForm.owner_password,
       }))
     } catch (error) {
-      setFeedback({ severity: 'error', message: error?.response?.data?.detail || 'Falha ao criar tenant.' })
+      setFeedback({
+        severity: 'error',
+        message: error?.response?.data?.detail || 'Falha ao criar tenant.',
+      })
     } finally {
       setLoading(false)
     }
@@ -142,17 +154,53 @@ export default function AuthPage() {
               alt="OneSync"
               sx={{ width: { xs: 190, md: 240 }, display: 'block', mb: 2 }}
             />
-            <Typography variant="h2" sx={{ fontWeight: 800, lineHeight: 1.05, mb: 2, fontSize: { xs: '2.5rem', md: '4rem' } }}>
+            <Typography
+              variant="h2"
+              sx={{
+                fontWeight: 800,
+                lineHeight: 1.05,
+                mb: 2,
+                fontSize: { xs: '2.5rem', md: '4rem' },
+              }}
+            >
               Sincronize conversas, desenvolvimento e execução.
             </Typography>
-            <Typography sx={{ maxWidth: 620, fontSize: { xs: '1rem', md: '1.15rem' }, color: 'rgba(255,255,255,0.84)', mb: 3 }}>
-              Uma experiência única para acompanhar 1:1, PDI, riscos e ações do time com clareza, cadência e inteligência operacional.
+            <Typography
+              sx={{
+                maxWidth: 620,
+                fontSize: { xs: '1rem', md: '1.15rem' },
+                color: 'rgba(255,255,255,0.84)',
+                mb: 3,
+              }}
+            >
+              Uma experiência única para acompanhar 1:1, PDI, riscos e ações do time com clareza,
+              cadência e inteligência operacional.
             </Typography>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
-              <Paper sx={{ px: 2, py: 1.25, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.10)', color: 'white', backdropFilter: 'blur(14px)', border: '1px solid rgba(255,255,255,0.14)' }}>
+              <Paper
+                sx={{
+                  px: 2,
+                  py: 1.25,
+                  borderRadius: 3,
+                  bgcolor: 'rgba(255,255,255,0.10)',
+                  color: 'white',
+                  backdropFilter: 'blur(14px)',
+                  border: '1px solid rgba(255,255,255,0.14)',
+                }}
+              >
                 <Typography sx={{ fontWeight: 700 }}>1:1 + PDI + Ações</Typography>
               </Paper>
-              <Paper sx={{ px: 2, py: 1.25, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.10)', color: 'white', backdropFilter: 'blur(14px)', border: '1px solid rgba(255,255,255,0.14)' }}>
+              <Paper
+                sx={{
+                  px: 2,
+                  py: 1.25,
+                  borderRadius: 3,
+                  bgcolor: 'rgba(255,255,255,0.10)',
+                  color: 'white',
+                  backdropFilter: 'blur(14px)',
+                  border: '1px solid rgba(255,255,255,0.14)',
+                }}
+              >
                 <Typography sx={{ fontWeight: 700 }}>Fluxo multi-tenant com IA</Typography>
               </Paper>
             </Stack>
@@ -173,7 +221,8 @@ export default function AuthPage() {
                   OneSync
                 </Typography>
                 <Typography color="text.secondary">
-                  Login da plataforma multi-tenant, cadastro da empresa e início do fluxo SSO com Google.
+                  Login da plataforma multi-tenant, cadastro da empresa e início do fluxo SSO com
+                  Google.
                 </Typography>
               </Box>
 
@@ -189,17 +238,26 @@ export default function AuthPage() {
                   <TextField
                     label="Email"
                     value={loginForm.email}
-                    onChange={(e) => setLoginForm((current) => ({ ...current, email: e.target.value }))}
+                    onChange={(e) =>
+                      setLoginForm((current) => ({ ...current, email: e.target.value }))
+                    }
                     fullWidth
                   />
                   <TextField
                     label="Senha"
                     type="password"
                     value={loginForm.password}
-                    onChange={(e) => setLoginForm((current) => ({ ...current, password: e.target.value }))}
+                    onChange={(e) =>
+                      setLoginForm((current) => ({ ...current, password: e.target.value }))
+                    }
                     fullWidth
                   />
-                  <Button variant="contained" size="large" onClick={handlePasswordLogin} disabled={loading}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    onClick={handlePasswordLogin}
+                    disabled={loading}
+                  >
                     {loading ? 'Entrando...' : 'Entrar com email e senha'}
                   </Button>
 
@@ -208,39 +266,129 @@ export default function AuthPage() {
                   <TextField
                     label="CNPJ do tenant"
                     value={loginForm.tenantCnpj}
-                    onChange={(e) => setLoginForm((current) => ({ ...current, tenantCnpj: e.target.value }))}
+                    onChange={(e) =>
+                      setLoginForm((current) => ({ ...current, tenantCnpj: e.target.value }))
+                    }
                     fullWidth
                   />
                   <TextField
                     label="Google ID Token"
                     value={loginForm.googleIdToken}
-                    onChange={(e) => setLoginForm((current) => ({ ...current, googleIdToken: e.target.value }))}
+                    onChange={(e) =>
+                      setLoginForm((current) => ({ ...current, googleIdToken: e.target.value }))
+                    }
                     multiline
                     rows={3}
                     fullWidth
                     helperText="Integração inicial: cole aqui o ID token do Google até adicionarmos o botão OAuth completo."
                   />
-                  <Button variant="outlined" size="large" onClick={handleGoogleLogin} disabled={loading || !loginForm.googleIdToken || !loginForm.tenantCnpj}>
+                  <Button
+                    variant="outlined"
+                    size="large"
+                    onClick={handleGoogleLogin}
+                    disabled={loading || !loginForm.googleIdToken || !loginForm.tenantCnpj}
+                  >
                     {loading ? 'Validando...' : 'Entrar com Google'}
                   </Button>
                 </Stack>
               ) : (
                 <Stack spacing={2}>
-                  <TextField label="Nome da empresa" value={tenantForm.company_name} onChange={(e) => setTenantForm((current) => ({ ...current, company_name: e.target.value }))} fullWidth />
-                  <TextField label="CNPJ" value={tenantForm.cnpj} onChange={(e) => setTenantForm((current) => ({ ...current, cnpj: e.target.value }))} fullWidth />
-                  <TextField label="Email da empresa" value={tenantForm.email} onChange={(e) => setTenantForm((current) => ({ ...current, email: e.target.value }))} fullWidth />
-                  <TextField label="Endereço" value={tenantForm.address} onChange={(e) => setTenantForm((current) => ({ ...current, address: e.target.value }))} fullWidth />
-                  <TextField label="Telefone" value={tenantForm.phone} onChange={(e) => setTenantForm((current) => ({ ...current, phone: e.target.value }))} fullWidth />
-                  <TextField label="Quantidade de colaboradores" type="number" value={tenantForm.collaborator_quota} onChange={(e) => setTenantForm((current) => ({ ...current, collaborator_quota: e.target.value }))} fullWidth />
-                  <TextField select label="Plano" value={tenantForm.plan_type} onChange={(e) => setTenantForm((current) => ({ ...current, plan_type: e.target.value }))} fullWidth>
+                  <TextField
+                    label="Nome da empresa"
+                    value={tenantForm.company_name}
+                    onChange={(e) =>
+                      setTenantForm((current) => ({ ...current, company_name: e.target.value }))
+                    }
+                    fullWidth
+                  />
+                  <TextField
+                    label="CNPJ"
+                    value={tenantForm.cnpj}
+                    onChange={(e) =>
+                      setTenantForm((current) => ({ ...current, cnpj: e.target.value }))
+                    }
+                    fullWidth
+                  />
+                  <TextField
+                    label="Email da empresa"
+                    value={tenantForm.email}
+                    onChange={(e) =>
+                      setTenantForm((current) => ({ ...current, email: e.target.value }))
+                    }
+                    fullWidth
+                  />
+                  <TextField
+                    label="Endereço"
+                    value={tenantForm.address}
+                    onChange={(e) =>
+                      setTenantForm((current) => ({ ...current, address: e.target.value }))
+                    }
+                    fullWidth
+                  />
+                  <TextField
+                    label="Telefone"
+                    value={tenantForm.phone}
+                    onChange={(e) =>
+                      setTenantForm((current) => ({ ...current, phone: e.target.value }))
+                    }
+                    fullWidth
+                  />
+                  <TextField
+                    label="Quantidade de colaboradores"
+                    type="number"
+                    value={tenantForm.collaborator_quota}
+                    onChange={(e) =>
+                      setTenantForm((current) => ({
+                        ...current,
+                        collaborator_quota: e.target.value,
+                      }))
+                    }
+                    fullWidth
+                  />
+                  <TextField
+                    select
+                    label="Plano"
+                    value={tenantForm.plan_type}
+                    onChange={(e) =>
+                      setTenantForm((current) => ({ ...current, plan_type: e.target.value }))
+                    }
+                    fullWidth
+                  >
                     <MenuItem value="FREE">Free</MenuItem>
                     <MenuItem value="CUSTOM">Custom</MenuItem>
                   </TextField>
                   <Divider>Usuário owner</Divider>
-                  <TextField label="Nome do owner" value={tenantForm.owner_name} onChange={(e) => setTenantForm((current) => ({ ...current, owner_name: e.target.value }))} fullWidth />
-                  <TextField label="Email do owner" value={tenantForm.owner_email} onChange={(e) => setTenantForm((current) => ({ ...current, owner_email: e.target.value }))} fullWidth />
-                  <TextField label="Senha do owner" type="password" value={tenantForm.owner_password} onChange={(e) => setTenantForm((current) => ({ ...current, owner_password: e.target.value }))} fullWidth />
-                  <Button variant="contained" size="large" onClick={handleRegisterTenant} disabled={loading}>
+                  <TextField
+                    label="Nome do owner"
+                    value={tenantForm.owner_name}
+                    onChange={(e) =>
+                      setTenantForm((current) => ({ ...current, owner_name: e.target.value }))
+                    }
+                    fullWidth
+                  />
+                  <TextField
+                    label="Email do owner"
+                    value={tenantForm.owner_email}
+                    onChange={(e) =>
+                      setTenantForm((current) => ({ ...current, owner_email: e.target.value }))
+                    }
+                    fullWidth
+                  />
+                  <TextField
+                    label="Senha do owner"
+                    type="password"
+                    value={tenantForm.owner_password}
+                    onChange={(e) =>
+                      setTenantForm((current) => ({ ...current, owner_password: e.target.value }))
+                    }
+                    fullWidth
+                  />
+                  <Button
+                    variant="contained"
+                    size="large"
+                    onClick={handleRegisterTenant}
+                    disabled={loading}
+                  >
                     {loading ? 'Criando tenant...' : 'Criar empresa'}
                   </Button>
                 </Stack>
@@ -265,11 +413,14 @@ export default function AuthPage() {
                 Escolha o modelo ideal para sua operação
               </Typography>
               <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.78)' }}>
-                Comece rápido com o plano base ou evolua para uma experiência integrada e personalizada.
+                Comece rápido com o plano base ou evolua para uma experiência integrada e
+                personalizada.
               </Typography>
             </Box>
 
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2.5 }}>
+            <Box
+              sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2.5 }}
+            >
               {/* Plano Starter */}
               <Paper
                 sx={{
@@ -294,7 +445,10 @@ export default function AuthPage() {
                 </Box>
 
                 <Box>
-                  <Typography component="span" sx={{ fontSize: 36, fontWeight: 900, lineHeight: 1 }}>
+                  <Typography
+                    component="span"
+                    sx={{ fontSize: 36, fontWeight: 900, lineHeight: 1 }}
+                  >
                     Gratuito
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', mt: 0.25 }}>
@@ -334,12 +488,21 @@ export default function AuthPage() {
                 >
                   Começar grátis
                   <br />
-                  <Typography component="span" variant="caption" sx={{ opacity: 0.8, fontWeight: 400 }}>
+                  <Typography
+                    component="span"
+                    variant="caption"
+                    sx={{ opacity: 0.8, fontWeight: 400 }}
+                  >
                     Sem cartão de crédito
                   </Typography>
                 </Button>
 
-                <Stack direction="row" alignItems="center" spacing={0.75} sx={{ color: 'rgba(255,255,255,0.55)' }}>
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  spacing={0.75}
+                  sx={{ color: 'rgba(255,255,255,0.55)' }}
+                >
                   <Typography variant="caption">☁</Typography>
                   <Typography variant="caption">Hospedado pela OneSync</Typography>
                 </Stack>
@@ -359,7 +522,9 @@ export default function AuthPage() {
                       'Suporte via fórum',
                     ].map((feature) => (
                       <Stack key={feature} direction="row" alignItems="center" spacing={1}>
-                        <Typography sx={{ color: '#4ade80', fontSize: 13, lineHeight: 1 }}>✓</Typography>
+                        <Typography sx={{ color: '#4ade80', fontSize: 13, lineHeight: 1 }}>
+                          ✓
+                        </Typography>
                         <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.75)' }}>
                           {feature}
                         </Typography>
@@ -388,13 +553,17 @@ export default function AuthPage() {
                     Pro
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.65)' }}>
-                    Para equipes que precisam de integrações, automação e experiência sob medida para escalar.
+                    Para equipes que precisam de integrações, automação e experiência sob medida
+                    para escalar.
                   </Typography>
                 </Box>
 
                 <Box>
                   <Stack direction="row" alignItems="baseline" spacing={0.5}>
-                    <Typography component="span" sx={{ fontSize: 36, fontWeight: 900, lineHeight: 1 }}>
+                    <Typography
+                      component="span"
+                      sx={{ fontSize: 36, fontWeight: 900, lineHeight: 1 }}
+                    >
                       Sob consulta
                     </Typography>
                   </Stack>
@@ -441,12 +610,21 @@ export default function AuthPage() {
                 >
                   Falar com vendas
                   <br />
-                  <Typography component="span" variant="caption" sx={{ opacity: 0.8, fontWeight: 400 }}>
+                  <Typography
+                    component="span"
+                    variant="caption"
+                    sx={{ opacity: 0.8, fontWeight: 400 }}
+                  >
                     Demonstração gratuita
                   </Typography>
                 </Button>
 
-                <Stack direction="row" alignItems="center" spacing={0.75} sx={{ color: 'rgba(255,255,255,0.55)' }}>
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  spacing={0.75}
+                  sx={{ color: 'rgba(255,255,255,0.55)' }}
+                >
                   <Typography variant="caption">☁</Typography>
                   <Typography variant="caption">Hospedado pela OneSync</Typography>
                 </Stack>
@@ -469,7 +647,9 @@ export default function AuthPage() {
                       'Histórico de reuniões e PDIs',
                     ].map((feature) => (
                       <Stack key={feature} direction="row" alignItems="center" spacing={1}>
-                        <Typography sx={{ color: '#4ade80', fontSize: 13, lineHeight: 1 }}>✓</Typography>
+                        <Typography sx={{ color: '#4ade80', fontSize: 13, lineHeight: 1 }}>
+                          ✓
+                        </Typography>
                         <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.75)' }}>
                           {feature}
                         </Typography>

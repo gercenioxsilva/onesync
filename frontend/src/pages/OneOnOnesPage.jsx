@@ -152,19 +152,27 @@ export default function OneOnOnesPage() {
   const filtered = useMemo(
     () =>
       oneOnOnes.filter((item) =>
-        (item.collaborator_name || '').toLowerCase().includes(filter.toLowerCase()),
+        (item.collaborator_name || '').toLowerCase().includes(filter.toLowerCase())
       ),
-    [filter, oneOnOnes],
+    [filter, oneOnOnes]
   )
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3, gap: 2, flexWrap: 'wrap' }}>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'space-between', mb: 3, gap: 2, flexWrap: 'wrap' }}
+      >
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>CRUD de 1:1</Typography>
-          <Typography color="text.secondary">Cadastro, edição, histórico, sentimento e próximos passos.</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+            CRUD de 1:1
+          </Typography>
+          <Typography color="text.secondary">
+            Cadastro, edição, histórico, sentimento e próximos passos.
+          </Typography>
         </Box>
-        <Button variant="contained" onClick={() => setOpen(true)}>+ Nova 1:1</Button>
+        <Button variant="contained" onClick={() => setOpen(true)}>
+          + Nova 1:1
+        </Button>
       </Box>
 
       <Paper sx={{ p: 2, mb: 2, borderRadius: 1 }}>
@@ -186,7 +194,7 @@ export default function OneOnOnesPage() {
               <TableCell>Sinal</TableCell>
               <TableCell>Próxima conversa</TableCell>
               <TableCell>Resumo</TableCell>
-                <TableCell>Ações</TableCell>
+              <TableCell>Ações</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -262,7 +270,9 @@ export default function OneOnOnesPage() {
                 label="Próxima 1:1"
                 type="date"
                 value={newOneOnOne.next_meeting_date}
-                onChange={(e) => setNewOneOnOne({ ...newOneOnOne, next_meeting_date: e.target.value })}
+                onChange={(e) =>
+                  setNewOneOnOne({ ...newOneOnOne, next_meeting_date: e.target.value })
+                }
                 fullWidth
                 InputLabelProps={{ shrink: true }}
               />

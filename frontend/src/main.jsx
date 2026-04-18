@@ -72,11 +72,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Routes>
             <Route path="/auth" element={<AuthPage />} />
             <Route
-              element={(
+              element={
                 <ProtectedRoute>
                   <Layout />
                 </ProtectedRoute>
-              )}
+              }
             >
               <Route path="/" element={<DashboardPage />} />
               <Route path="/collaborators" element={<CollaboratorsPage />} />
@@ -92,5 +92,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         </BrowserRouter>
       </AuthProvider>
     </ThemeProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 )

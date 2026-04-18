@@ -3,7 +3,8 @@ import axios from 'axios'
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
 const AUTH_STORAGE_KEY = 'people_app_access_token'
 const AUTH_SESSION_KEY = 'people_app_session'
-const AUTH_EMAIL = import.meta.env.VITE_AUTH_EMAIL || import.meta.env.VITE_AUTH_USERNAME || 'admin@people.local'
+const AUTH_EMAIL =
+  import.meta.env.VITE_AUTH_EMAIL || import.meta.env.VITE_AUTH_USERNAME || 'admin@people.local'
 const AUTH_PASSWORD = import.meta.env.VITE_AUTH_PASSWORD || 'admin123'
 
 const getStoredToken = () => {
@@ -71,7 +72,7 @@ api.interceptors.response.use(
       setStoredSession(null)
     }
     return Promise.reject(error)
-  },
+  }
 )
 
 export const authAPI = {
@@ -150,15 +151,14 @@ export const oneOnOnesAPI = {
           ...item,
           collaborator_name: collaborator.name,
         }))
-      }),
+      })
     )
     return { data: oneOnOnesByCollaborator.flat() }
   },
   create: (data) => api.post('/one-on-ones', data),
   update: (id, data) => api.put(`/one-on-ones/${id}`, data),
   delete: (id) => api.delete(`/one-on-ones/${id}`),
-  listByCollaborator: (collaboratorId) =>
-    api.get(`/one-on-ones/collaborator/${collaboratorId}`),
+  listByCollaborator: (collaboratorId) => api.get(`/one-on-ones/collaborator/${collaboratorId}`),
 }
 
 export const pdisAPI = {
@@ -172,15 +172,14 @@ export const pdisAPI = {
           ...item,
           collaborator_name: collaborator.name,
         }))
-      }),
+      })
     )
     return { data: pdisByCollaborator.flat() }
   },
   create: (data) => api.post('/pdis', data),
   update: (id, data) => api.put(`/pdis/${id}`, data),
   delete: (id) => api.delete(`/pdis/${id}`),
-  listByCollaborator: (collaboratorId) =>
-    api.get(`/pdis/collaborator/${collaboratorId}`),
+  listByCollaborator: (collaboratorId) => api.get(`/pdis/collaborator/${collaboratorId}`),
 }
 
 export const reportingAPI = {

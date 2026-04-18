@@ -151,8 +151,12 @@ export default function AIConfigTab() {
 
       {!editMode && config && (
         <Paper sx={{ p: 3, mb: 3, borderRadius: 1 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>Configuração de IA</Typography>
+          <Box
+            sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 700 }}>
+              Configuração de IA
+            </Typography>
             {canManage && (
               <Button startIcon={<EditIcon />} size="small" onClick={() => setEditMode(true)}>
                 Editar
@@ -161,20 +165,42 @@ export default function AIConfigTab() {
           </Box>
 
           <Stack spacing={1.5}>
-            <Box sx={{ display: 'grid', gridTemplateColumns: '180px 1fr', gap: 2, alignItems: 'start' }}>
-              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>Provider</Typography>
-              <Chip label={config.provider?.toUpperCase()} color="primary" variant="outlined" size="small" />
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: '180px 1fr',
+                gap: 2,
+                alignItems: 'start',
+              }}
+            >
+              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                Provider
+              </Typography>
+              <Chip
+                label={config.provider?.toUpperCase()}
+                color="primary"
+                variant="outlined"
+                size="small"
+              />
 
-              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>Modelo</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                Modelo
+              </Typography>
               <Typography variant="body2">{config.model_name}</Typography>
 
-              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>Temperatura</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                Temperatura
+              </Typography>
               <Typography variant="body2">{config.temperature}</Typography>
 
-              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>Max Tokens</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                Max Tokens
+              </Typography>
               <Typography variant="body2">{config.max_tokens}</Typography>
 
-              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>Processa Automático</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                Processa Automático
+              </Typography>
               <Chip
                 label={config.auto_process_enabled ? 'Ativado' : 'Desativado'}
                 color={config.auto_process_enabled ? 'success' : 'default'}
@@ -182,13 +208,19 @@ export default function AIConfigTab() {
                 variant="outlined"
               />
 
-              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>Cota Mensal</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                Cota Mensal
+              </Typography>
               <Typography variant="body2">
                 {config.monthly_usage} / {config.monthly_quota} processamentos
               </Typography>
 
-              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>API Key</Typography>
-              <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>{config.api_key_masked}</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                API Key
+              </Typography>
+              <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+                {config.api_key_masked}
+              </Typography>
             </Box>
           </Stack>
         </Paper>
@@ -206,7 +238,13 @@ export default function AIConfigTab() {
             Configure uma IA para começar a processar suas 1:1s automaticamente.
           </Typography>
           {canManage && (
-            <Button variant="contained" onClick={() => { setEditForm({}); setEditMode(true) }}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                setEditForm({})
+                setEditMode(true)
+              }}
+            >
               Configurar IA
             </Button>
           )}
@@ -216,7 +254,9 @@ export default function AIConfigTab() {
       {/* ──────────── Edit Form ──────────── */}
       {editMode && canManage && (
         <Paper sx={{ p: 3, mb: 3, borderRadius: 1 }}>
-          <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>Configurar IA</Typography>
+          <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+            Configurar IA
+          </Typography>
 
           <Stack spacing={2}>
             <TextField
@@ -254,7 +294,9 @@ export default function AIConfigTab() {
                 type="number"
                 inputProps={{ step: 0.1, min: 0, max: 1 }}
                 value={editForm?.temperature || 0.7}
-                onChange={(e) => setEditForm({ ...editForm, temperature: parseFloat(e.target.value) })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, temperature: parseFloat(e.target.value) })
+                }
               />
 
               <TextField
@@ -268,7 +310,9 @@ export default function AIConfigTab() {
                 label="Cota Mensal"
                 type="number"
                 value={editForm?.monthly_quota || 10}
-                onChange={(e) => setEditForm({ ...editForm, monthly_quota: parseInt(e.target.value) })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, monthly_quota: parseInt(e.target.value) })
+                }
                 helperText="0 = ilimitado"
               />
             </Box>
@@ -277,15 +321,26 @@ export default function AIConfigTab() {
               control={
                 <Switch
                   checked={editForm?.auto_process_enabled || false}
-                  onChange={(e) => setEditForm({ ...editForm, auto_process_enabled: e.target.checked })}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, auto_process_enabled: e.target.checked })
+                  }
                 />
               }
               label="Ativar processamento automático (beta)"
             />
 
             <Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>Prompt Customizado</Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  mb: 1,
+                }}
+              >
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  Prompt Customizado
+                </Typography>
                 <Button
                   size="small"
                   startIcon={<CodeIcon />}
@@ -308,7 +363,12 @@ export default function AIConfigTab() {
               <Button variant="contained" onClick={handleSave} disabled={loading}>
                 {loading ? 'Salvando...' : 'Salvar'}
               </Button>
-              <Button onClick={() => { setEditMode(false); setFeedback(null) }}>
+              <Button
+                onClick={() => {
+                  setEditMode(false)
+                  setFeedback(null)
+                }}
+              >
                 Cancelar
               </Button>
             </Stack>
@@ -391,7 +451,12 @@ export default function AIConfigTab() {
       )}
 
       {/* ──────────── Prompt Template Dialog ──────────── */}
-      <Dialog open={promptDialogOpen} onClose={() => setPromptDialogOpen(false)} maxWidth="md" fullWidth>
+      <Dialog
+        open={promptDialogOpen}
+        onClose={() => setPromptDialogOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
         <DialogTitle>Editar Template de Prompt</DialogTitle>
         <DialogContent sx={{ pt: 2 }}>
           <TextField

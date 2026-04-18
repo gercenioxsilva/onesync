@@ -36,7 +36,7 @@ export default function CollaboratorDetailPage() {
       return
     }
     const collaboratorId = id
-    
+
     // Load collaborator
     collaboratorsAPI
       .get(collaboratorId)
@@ -57,7 +57,13 @@ export default function CollaboratorDetailPage() {
 
     actionsAPI
       .list()
-      .then((res) => setActions(res.data.filter((item) => item.collaborator_id === collaboratorId && item.status !== 'CONCLUIDO')))
+      .then((res) =>
+        setActions(
+          res.data.filter(
+            (item) => item.collaborator_id === collaboratorId && item.status !== 'CONCLUIDO'
+          )
+        )
+      )
       .catch(() => setActions([]))
   }
 
@@ -74,7 +80,9 @@ export default function CollaboratorDetailPage() {
       <Paper sx={{ p: 3, mb: 3, borderRadius: 1 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-            <Avatar sx={{ width: 64, height: 64, bgcolor: 'primary.main', fontSize: 24, fontWeight: 700 }}>
+            <Avatar
+              sx={{ width: 64, height: 64, bgcolor: 'primary.main', fontSize: 24, fontWeight: 700 }}
+            >
               {collaborator.name?.slice(0, 2).toUpperCase()}
             </Avatar>
             <Box>
@@ -131,7 +139,9 @@ export default function CollaboratorDetailPage() {
                 </Grid>
                 <Grid item xs={12}>
                   <Typography color="text.secondary">Objetivo de carreira</Typography>
-                  <Typography>Ampliar impacto técnico e capacidade de liderança informal no time.</Typography>
+                  <Typography>
+                    Ampliar impacto técnico e capacidade de liderança informal no time.
+                  </Typography>
                 </Grid>
               </Grid>
             </Paper>
@@ -198,7 +208,12 @@ export default function CollaboratorDetailPage() {
                 {actions.map((action) => (
                   <Box
                     key={action.id}
-                    sx={{ p: 1.5, bgcolor: '#f8fafc', borderRadius: 1, border: '1px solid #e5e7eb' }}
+                    sx={{
+                      p: 1.5,
+                      bgcolor: '#f8fafc',
+                      borderRadius: 1,
+                      border: '1px solid #e5e7eb',
+                    }}
                   >
                     <Typography sx={{ fontWeight: 600 }}>{action.title}</Typography>
                     <Typography variant="body2" color="text.secondary">

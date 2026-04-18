@@ -45,7 +45,9 @@ export default function ReportsPage() {
         <Typography variant="h4" sx={{ fontWeight: 700 }}>
           Relatórios
         </Typography>
-        <Typography color="text.secondary">Heatmap de acompanhamento, KPIs e insights automáticos.</Typography>
+        <Typography color="text.secondary">
+          Heatmap de acompanhamento, KPIs e insights automáticos.
+        </Typography>
       </Box>
 
       <Grid container spacing={3}>
@@ -102,7 +104,9 @@ export default function ReportsPage() {
                 <Typography variant="body2">
                   Taxa de PDIs iniciados: {insights?.pdiInitiated || 60}%
                 </Typography>
-                <Typography variant="body2">Taxa de 1:1 em dia: {insights?.oneOnOneRate || 90}%</Typography>
+                <Typography variant="body2">
+                  Taxa de 1:1 em dia: {insights?.oneOnOneRate || 90}%
+                </Typography>
                 <Typography variant="body2">
                   Colaboradores em atenção: {insights?.collabsInAttention || 10}%
                 </Typography>

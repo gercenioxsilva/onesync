@@ -112,8 +112,12 @@ export default function Layout() {
                   {currentUser?.full_name?.slice(0, 2)?.toUpperCase() || 'U'}
                 </Avatar>
               </Box>
-              <Button variant="outlined" onClick={() => navigate('/reports')}>Relatórios</Button>
-              <Button variant="contained" onClick={() => navigate('/collaborators')}>Novo fluxo</Button>
+              <Button variant="outlined" onClick={() => navigate('/reports')}>
+                Relatórios
+              </Button>
+              <Button variant="contained" onClick={() => navigate('/collaborators')}>
+                Novo fluxo
+              </Button>
               <Button
                 variant="outlined"
                 color="inherit"
@@ -129,7 +133,7 @@ export default function Layout() {
         </AppBar>
 
         <Box component="main" sx={{ flexGrow: 1 }}>
-        <Outlet />
+          <Outlet />
         </Box>
 
         <Box

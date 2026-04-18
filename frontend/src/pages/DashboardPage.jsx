@@ -41,27 +41,29 @@ export default function DashboardPage() {
 
   const formatStatus = (status) => (status ? String(status).replaceAll('_', ' ') : '-')
 
-  const sortCollaboratorsByPriority = (items) => [...items].sort((a, b) => {
-    const riskDiff = (riskWeight[b.risk] || 0) - (riskWeight[a.risk] || 0)
-    if (riskDiff !== 0) return riskDiff
+  const sortCollaboratorsByPriority = (items) =>
+    [...items].sort((a, b) => {
+      const riskDiff = (riskWeight[b.risk] || 0) - (riskWeight[a.risk] || 0)
+      if (riskDiff !== 0) return riskDiff
 
-    const progressA = Number(a.progress || 0)
-    const progressB = Number(b.progress || 0)
-    if (progressA !== progressB) return progressA - progressB
+      const progressA = Number(a.progress || 0)
+      const progressB = Number(b.progress || 0)
+      if (progressA !== progressB) return progressA - progressB
 
-    return String(a.name || '').localeCompare(String(b.name || ''))
-  })
-
-  const sortActionsByPriority = (items) => [...items]
-    .filter((item) => item.status !== 'CONCLUIDO')
-    .sort((a, b) => {
-      const aHasDate = Boolean(a.due_date)
-      const bHasDate = Boolean(b.due_date)
-      if (aHasDate && bHasDate) return String(a.due_date).localeCompare(String(b.due_date))
-      if (aHasDate) return -1
-      if (bHasDate) return 1
-      return String(a.title || '').localeCompare(String(b.title || ''))
+      return String(a.name || '').localeCompare(String(b.name || ''))
     })
+
+  const sortActionsByPriority = (items) =>
+    [...items]
+      .filter((item) => item.status !== 'CONCLUIDO')
+      .sort((a, b) => {
+        const aHasDate = Boolean(a.due_date)
+        const bHasDate = Boolean(b.due_date)
+        if (aHasDate && bHasDate) return String(a.due_date).localeCompare(String(b.due_date))
+        if (aHasDate) return -1
+        if (bHasDate) return 1
+        return String(a.title || '').localeCompare(String(b.title || ''))
+      })
 
   useEffect(() => {
     Promise.all([
@@ -96,7 +98,9 @@ export default function DashboardPage() {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4, gap: 2, flexWrap: 'wrap' }}>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'space-between', mb: 4, gap: 2, flexWrap: 'wrap' }}
+      >
         <Box>
           <Typography variant="h4" sx={{ mb: 1, fontWeight: 700 }}>
             Dashboard executivo
@@ -167,24 +171,49 @@ export default function DashboardPage() {
             </Typography>
             <Stack spacing={2}>
               {teamPriorities.map((item) => (
-                <Box key={item.id} sx={{ p: 2, border: '1px solid #e5e7eb', borderRadius: 1, bgcolor: '#fafbff' }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
+                <Box
+                  key={item.id}
+                  sx={{ p: 2, border: '1px solid #e5e7eb', borderRadius: 1, bgcolor: '#fafbff' }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      gap: 2,
+                      flexWrap: 'wrap',
+                    }}
+                  >
                     <Box>
                       <Typography sx={{ fontWeight: 700 }}>{item.name}</Typography>
-                      <Typography variant="body2" color="text.secondary">{item.role} • {item.focus}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {item.role} • {item.focus}
+                      </Typography>
                     </Box>
                     <Stack direction="row" spacing={1}>
-                      <Chip label={item.risk} color={item.risk === 'ALTO' ? 'error' : item.risk === 'MEDIO' ? 'warning' : 'success'} size="small" />
+                      <Chip
+                        label={item.risk}
+                        color={
+                          item.risk === 'ALTO'
+                            ? 'error'
+                            : item.risk === 'MEDIO'
+                              ? 'warning'
+                              : 'success'
+                        }
+                        size="small"
+                      />
                       <Chip label={formatStatus(item.pdi_status)} variant="outlined" size="small" />
                     </Stack>
                   </Box>
                   <Typography variant="body2" sx={{ mt: 1 }}>
-                    Próxima 1:1: {formatDate(item.next_one_on_one)} • Progresso PDI: {Number(item.progress || 0)}%
+                    Próxima 1:1: {formatDate(item.next_one_on_one)} • Progresso PDI:{' '}
+                    {Number(item.progress || 0)}%
                   </Typography>
                 </Box>
               ))}
               {teamPriorities.length === 0 && (
-                <Typography variant="body2" color="text.secondary">Nenhuma prioridade encontrada.</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Nenhuma prioridade encontrada.
+                </Typography>
               )}
             </Stack>
           </Paper>
@@ -228,14 +257,17 @@ export default function DashboardPage() {
                     <Box>
                       <Typography sx={{ fontWeight: 600 }}>{action.title}</Typography>
                       <Typography variant="body2" color="text.secondary">
-                        {action.owner || '-'} • {formatDate(action.due_date || action.dueDate)} • {formatStatus(action.status)}
+                        {action.owner || '-'} • {formatDate(action.due_date || action.dueDate)} •{' '}
+                        {formatStatus(action.status)}
                       </Typography>
                     </Box>
                     {index < priorityActions.length - 1 ? <Divider /> : null}
                   </React.Fragment>
                 ))}
                 {priorityActions.length === 0 && (
-                  <Typography variant="body2" color="text.secondary">Nenhuma ação em aberto.</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Nenhuma ação em aberto.
+                  </Typography>
                 )}
               </Stack>
             </Paper>

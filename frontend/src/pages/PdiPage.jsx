@@ -114,10 +114,16 @@ export default function PdiPage() {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3, gap: 2, flexWrap: 'wrap' }}>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'space-between', mb: 3, gap: 2, flexWrap: 'wrap' }}
+      >
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>CRUD de PDI</Typography>
-          <Typography color="text.secondary">Metas SMART, progresso, checkpoints e encerramento de ciclo.</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+            CRUD de PDI
+          </Typography>
+          <Typography color="text.secondary">
+            Metas SMART, progresso, checkpoints e encerramento de ciclo.
+          </Typography>
         </Box>
         <Button variant="contained" onClick={() => setOpen(true)}>
           + Novo PDI
@@ -157,7 +163,9 @@ export default function PdiPage() {
                   <TableCell>
                     <Chip
                       label={item.status}
-                      color={item.progress >= 80 ? 'success' : item.progress > 0 ? 'info' : 'default'}
+                      color={
+                        item.progress >= 80 ? 'success' : item.progress > 0 ? 'info' : 'default'
+                      }
                       size="small"
                     />
                   </TableCell>

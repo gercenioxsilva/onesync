@@ -31,32 +31,35 @@ export function AuthProvider({ children }) {
     bootstrap()
   }, [])
 
-  const value = useMemo(() => ({
-    session,
-    currentUser,
-    loading,
-    isAuthenticated: Boolean(session?.access_token),
-    login: async (email, password) => {
-      const nextSession = await authAPI.login(email, password)
-      setSession(nextSession)
-      const response = await authAPI.me()
-      setCurrentUser(response.data)
-      return nextSession
-    },
-    loginGoogle: async (idToken, tenantCnpj) => {
-      const nextSession = await authAPI.loginGoogle(idToken, tenantCnpj)
-      setSession(nextSession)
-      const response = await authAPI.me()
-      setCurrentUser(response.data)
-      return nextSession
-    },
-    registerTenant: (payload) => authAPI.registerTenant(payload),
-    logout: () => {
-      authAPI.logout()
-      setSession(null)
-      setCurrentUser(null)
-    },
-  }), [session, currentUser, loading])
+  const value = useMemo(
+    () => ({
+      session,
+      currentUser,
+      loading,
+      isAuthenticated: Boolean(session?.access_token),
+      login: async (email, password) => {
+        const nextSession = await authAPI.login(email, password)
+        setSession(nextSession)
+        const response = await authAPI.me()
+        setCurrentUser(response.data)
+        return nextSession
+      },
+      loginGoogle: async (idToken, tenantCnpj) => {
+        const nextSession = await authAPI.loginGoogle(idToken, tenantCnpj)
+        setSession(nextSession)
+        const response = await authAPI.me()
+        setCurrentUser(response.data)
+        return nextSession
+      },
+      registerTenant: (payload) => authAPI.registerTenant(payload),
+      logout: () => {
+        authAPI.logout()
+        setSession(null)
+        setCurrentUser(null)
+      },
+    }),
+    [session, currentUser, loading]
+  )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

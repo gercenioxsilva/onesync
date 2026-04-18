@@ -105,26 +105,32 @@ export default function CollaboratorsPage() {
   const handleSelectCollaborator = (collaborator) => {
     setSelectedCollaborator(collaborator)
     setSelectedCollaboratorDetails({ oneOnOnes: [], pdi: null, actions: [], loading: true })
-    
+
     Promise.all([
-      oneOnOnesAPI.listByCollaborator(collaborator.id)
+      oneOnOnesAPI
+        .listByCollaborator(collaborator.id)
         .then((res) => res.data)
         .catch(() => []),
-      pdisAPI.listByCollaborator(collaborator.id)
+      pdisAPI
+        .listByCollaborator(collaborator.id)
         .then((res) => res.data[0])
         .catch(() => null),
-      actionsAPI.list()
-        .then((res) => res.data.filter((item) => item.collaborator_id === collaborator.id && item.status !== 'CONCLUIDO'))
+      actionsAPI
+        .list()
+        .then((res) =>
+          res.data.filter(
+            (item) => item.collaborator_id === collaborator.id && item.status !== 'CONCLUIDO'
+          )
+        )
         .catch(() => []),
-    ])
-      .then(([oneOnOnes, pdi, actions]) => {
-        setSelectedCollaboratorDetails({
-          oneOnOnes,
-          pdi,
-          actions,
-          loading: false,
-        })
+    ]).then(([oneOnOnes, pdi, actions]) => {
+      setSelectedCollaboratorDetails({
+        oneOnOnes,
+        pdi,
+        actions,
+        loading: false,
       })
+    })
   }
 
   const handleCloseDetails = () => {
@@ -173,9 +179,9 @@ export default function CollaboratorsPage() {
       })
       const updatedCollaborator = response.data
 
-      setCollaborators((current) => current.map((item) => (
-        item.id === updatedCollaborator.id ? updatedCollaborator : item
-      )))
+      setCollaborators((current) =>
+        current.map((item) => (item.id === updatedCollaborator.id ? updatedCollaborator : item))
+      )
       setImportFeedback({
         severity: 'success',
         message: `Colaborador ${updatedCollaborator.name} atualizado com sucesso!`,
@@ -257,7 +263,10 @@ export default function CollaboratorsPage() {
       })
       .catch((error) => {
         if (!error?.response) {
-          setCollaborators((current) => [...current, { ...newCollab, id: String(current.length + 1), risk: 'BAIXO', pdi_status: 'NO_PLANO' }])
+          setCollaborators((current) => [
+            ...current,
+            { ...newCollab, id: String(current.length + 1), risk: 'BAIXO', pdi_status: 'NO_PLANO' },
+          ])
           setOpen(false)
           setNewCollab({ name: '', email: '', squad: '', tech_lead_id: '', role: '', focus: '' })
           return
@@ -276,13 +285,15 @@ export default function CollaboratorsPage() {
       .updateRisk(id, action)
       .then(() => loadCollaborators())
       .catch(() => {
-        setCollaborators((current) => current.map((c) => {
-          if (c.id !== id) return c
-          const order = ['BAIXO', 'MEDIO', 'ALTO']
-          const idx = order.indexOf(c.risk)
-          const nextIdx = action === 'escalate' ? Math.min(idx + 1, 2) : Math.max(idx - 1, 0)
-          return { ...c, risk: order[nextIdx] }
-        }))
+        setCollaborators((current) =>
+          current.map((c) => {
+            if (c.id !== id) return c
+            const order = ['BAIXO', 'MEDIO', 'ALTO']
+            const idx = order.indexOf(c.risk)
+            const nextIdx = action === 'escalate' ? Math.min(idx + 1, 2) : Math.max(idx - 1, 0)
+            return { ...c, risk: order[nextIdx] }
+          })
+        )
       })
   }
 
@@ -307,9 +318,9 @@ export default function CollaboratorsPage() {
       })
 
       const updatedCollaborator = response.data
-      setCollaborators((current) => current.map((item) => (
-        item.id === updatedCollaborator.id ? updatedCollaborator : item
-      )))
+      setCollaborators((current) =>
+        current.map((item) => (item.id === updatedCollaborator.id ? updatedCollaborator : item))
+      )
       setSelectedCollaborator(updatedCollaborator)
       setImportFeedback({
         severity: 'success',
@@ -381,11 +392,15 @@ export default function CollaboratorsPage() {
     }
   }
 
-  const filtered = useMemo(() => collaborators.filter((c) => {
-    const matchesName = c.name.toLowerCase().includes(filter.toLowerCase())
-    const matchesRisk = riskFilter === 'TODOS' || c.risk === riskFilter
-    return matchesName && matchesRisk
-  }), [collaborators, filter, riskFilter])
+  const filtered = useMemo(
+    () =>
+      collaborators.filter((c) => {
+        const matchesName = c.name.toLowerCase().includes(filter.toLowerCase())
+        const matchesRisk = riskFilter === 'TODOS' || c.risk === riskFilter
+        return matchesName && matchesRisk
+      }),
+    [collaborators, filter, riskFilter]
+  )
 
   const getRiskColor = (risk) => {
     if (risk === 'ALTO') return 'error'
@@ -395,7 +410,9 @@ export default function CollaboratorsPage() {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3, gap: 2, flexWrap: 'wrap' }}>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'space-between', mb: 3, gap: 2, flexWrap: 'wrap' }}
+      >
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
             CRUD de colaboradores
@@ -440,37 +457,53 @@ export default function CollaboratorsPage() {
       )}
 
       <Paper sx={{ p: 2, mb: 2, borderRadius: 1, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-        <TextField label="Buscar por nome" value={filter} onChange={(e) => setFilter(e.target.value)} sx={{ minWidth: 280 }} />
-        <TextField select label="Risco" value={riskFilter} onChange={(e) => setRiskFilter(e.target.value)} sx={{ minWidth: 180 }}>
+        <TextField
+          label="Buscar por nome"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          sx={{ minWidth: 280 }}
+        />
+        <TextField
+          select
+          label="Risco"
+          value={riskFilter}
+          onChange={(e) => setRiskFilter(e.target.value)}
+          sx={{ minWidth: 180 }}
+        >
           <MenuItem value="TODOS">Todos</MenuItem>
           <MenuItem value="BAIXO">Baixo</MenuItem>
           <MenuItem value="MEDIO">Médio</MenuItem>
           <MenuItem value="ALTO">Alto</MenuItem>
         </TextField>
         <Typography variant="body2" color="text.secondary" sx={{ alignSelf: 'center' }}>
-          CSV aceito com colunas como `nome`/`name`, `email`, `papel`/`cargo`/`role`, `principal_foco`/`foco`/`focus`, `risco` e `status_pdi`.
+          CSV aceito com colunas como `nome`/`name`, `email`, `papel`/`cargo`/`role`,
+          `principal_foco`/`foco`/`focus`, `risco` e `status_pdi`.
         </Typography>
         <FormControlLabel
-          control={(
+          control={
             <Checkbox
               checked={importOptions.updateExisting}
-              onChange={(e) => setImportOptions((current) => ({ ...current, updateExisting: e.target.checked }))}
+              onChange={(e) =>
+                setImportOptions((current) => ({ ...current, updateExisting: e.target.checked }))
+              }
             />
-          )}
+          }
           label="Atualizar colaboradores existentes"
         />
         <FormControlLabel
-          control={(
+          control={
             <Checkbox
               checked={importOptions.enrichFromTxt}
-              onChange={(e) => setImportOptions((current) => ({ ...current, enrichFromTxt: e.target.checked }))}
+              onChange={(e) =>
+                setImportOptions((current) => ({ ...current, enrichFromTxt: e.target.checked }))
+              }
             />
-          )}
+          }
           label="Enriquecer cargo/foco usando arquivos .txt"
         />
       </Paper>
 
-        <TableContainer component={Paper} sx={{ borderRadius: 1, overflow: 'hidden' }}>
+      <TableContainer component={Paper} sx={{ borderRadius: 1, overflow: 'hidden' }}>
         <Table>
           <TableHead>
             <TableRow sx={{ bgcolor: '#f8fafc' }}>
@@ -487,7 +520,12 @@ export default function CollaboratorsPage() {
           </TableHead>
           <TableBody>
             {filtered.map((c) => (
-              <TableRow key={c.id} sx={{ '&:hover': { bgcolor: '#fafafa', cursor: 'pointer' } }} hover onClick={() => handleSelectCollaborator(c)}>
+              <TableRow
+                key={c.id}
+                sx={{ '&:hover': { bgcolor: '#fafafa', cursor: 'pointer' } }}
+                hover
+                onClick={() => handleSelectCollaborator(c)}
+              >
                 <TableCell sx={{ fontWeight: 600 }}>{c.name}</TableCell>
                 <TableCell>{c.email || '-'}</TableCell>
                 <TableCell>{c.squad || '-'}</TableCell>
@@ -499,16 +537,44 @@ export default function CollaboratorsPage() {
                 <TableCell align="center">{c.pdi_status}</TableCell>
                 <TableCell align="center">{formatDate(c.next_one_on_one)}</TableCell>
                 <TableCell align="right">
-                  <Button size="small" onClick={(e) => { e.stopPropagation(); handleOpenEditDialog(c) }} sx={{ mr: 1 }}>
+                  <Button
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleOpenEditDialog(c)
+                    }}
+                    sx={{ mr: 1 }}
+                  >
                     Editar
                   </Button>
-                  <Button size="small" onClick={(e) => { e.stopPropagation(); handleRisk(c.id, 'escalate') }} sx={{ mr: 1 }}>
+                  <Button
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleRisk(c.id, 'escalate')
+                    }}
+                    sx={{ mr: 1 }}
+                  >
                     ↑
                   </Button>
-                  <Button size="small" onClick={(e) => { e.stopPropagation(); handleRisk(c.id, 'reduce') }} sx={{ mr: 1 }}>
+                  <Button
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleRisk(c.id, 'reduce')
+                    }}
+                    sx={{ mr: 1 }}
+                  >
                     ↓
                   </Button>
-                  <Button size="small" color="error" onClick={(e) => { e.stopPropagation(); handleDelete(c.id) }}>
+                  <Button
+                    size="small"
+                    color="error"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleDelete(c.id)
+                    }}
+                  >
                     Excluir
                   </Button>
                 </TableCell>
@@ -531,12 +597,21 @@ export default function CollaboratorsPage() {
       >
         {selectedCollaborator && (
           <Box sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box
+              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
+            >
               <Typography variant="h6" sx={{ fontWeight: 700 }}>
                 Detalhes
               </Typography>
               <Box sx={{ display: 'flex', gap: 1 }}>
-                <Button size="small" variant="outlined" onClick={() => { handleOpenEditDialog(selectedCollaborator); handleCloseDetails(); }}>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={() => {
+                    handleOpenEditDialog(selectedCollaborator)
+                    handleCloseDetails()
+                  }}
+                >
                   Editar
                 </Button>
                 <IconButton size="small" onClick={handleCloseDetails}>
@@ -548,7 +623,15 @@ export default function CollaboratorsPage() {
             {selectedCollaboratorDetails.loading && <LinearProgress sx={{ mb: 2 }} />}
 
             <Box sx={{ mb: 3, display: 'flex', gap: 2, alignItems: 'center' }}>
-              <Avatar sx={{ width: 56, height: 56, bgcolor: 'primary.main', fontSize: 20, fontWeight: 700 }}>
+              <Avatar
+                sx={{
+                  width: 56,
+                  height: 56,
+                  bgcolor: 'primary.main',
+                  fontSize: 20,
+                  fontWeight: 700,
+                }}
+              >
                 {selectedCollaborator.name?.slice(0, 2).toUpperCase()}
               </Avatar>
               <Box>
@@ -566,7 +649,10 @@ export default function CollaboratorsPage() {
 
             <Box sx={{ overflowY: 'auto', flexGrow: 1 }}>
               <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: 'text.secondary' }}>
+                <Typography
+                  variant="subtitle2"
+                  sx={{ fontWeight: 700, mb: 1, color: 'text.secondary' }}
+                >
                   Informações
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -587,7 +673,10 @@ export default function CollaboratorsPage() {
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant="body2">Último 1:1:</Typography>
                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                      {formatDate(selectedCollaboratorDetails.oneOnOnes?.[0]?.meeting_date || selectedCollaboratorDetails.oneOnOnes?.[0]?.date)}
+                      {formatDate(
+                        selectedCollaboratorDetails.oneOnOnes?.[0]?.meeting_date ||
+                          selectedCollaboratorDetails.oneOnOnes?.[0]?.date
+                      )}
                     </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -609,7 +698,9 @@ export default function CollaboratorsPage() {
                     {collaborators
                       .filter((item) => item.id !== selectedCollaborator.id)
                       .map((item) => (
-                        <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
+                        <MenuItem key={item.id} value={item.id}>
+                          {item.name}
+                        </MenuItem>
                       ))}
                   </TextField>
                 </Box>
@@ -617,7 +708,10 @@ export default function CollaboratorsPage() {
 
               {selectedCollaborator.focus && (
                 <Box sx={{ mb: 3 }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: 'text.secondary' }}>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ fontWeight: 700, mb: 1, color: 'text.secondary' }}
+                  >
                     Foco Atual
                   </Typography>
                   <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
@@ -628,7 +722,10 @@ export default function CollaboratorsPage() {
 
               {selectedCollaboratorDetails.pdi && (
                 <Box sx={{ mb: 3 }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: 'text.secondary' }}>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ fontWeight: 700, mb: 1, color: 'text.secondary' }}
+                  >
                     PDI
                   </Typography>
                   <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
@@ -639,7 +736,10 @@ export default function CollaboratorsPage() {
 
               {selectedCollaboratorDetails.oneOnOnes?.length > 0 && (
                 <Box sx={{ mb: 3 }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: 'text.secondary' }}>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ fontWeight: 700, mb: 1, color: 'text.secondary' }}
+                  >
                     1:1 Recentes
                   </Typography>
                   <Stack spacing={1}>
@@ -651,7 +751,11 @@ export default function CollaboratorsPage() {
                         <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>
                           {o.summary || o.notes || 'Sem resumo registrado.'}
                         </Typography>
-                        <Typography variant="caption" display="block" sx={{ mt: 0.5, opacity: 0.75 }}>
+                        <Typography
+                          variant="caption"
+                          display="block"
+                          sx={{ mt: 0.5, opacity: 0.75 }}
+                        >
                           Próximos passos: {o.next_steps || '-'}
                         </Typography>
                       </Box>
@@ -662,7 +766,10 @@ export default function CollaboratorsPage() {
 
               {selectedCollaboratorDetails.actions?.length > 0 && (
                 <Box sx={{ mb: 3 }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: 'text.secondary' }}>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ fontWeight: 700, mb: 1, color: 'text.secondary' }}
+                  >
                     Ações Associadas
                   </Typography>
                   <Stack spacing={1}>
@@ -671,7 +778,11 @@ export default function CollaboratorsPage() {
                         <Typography variant="caption" sx={{ fontWeight: 600 }}>
                           {a.title}
                         </Typography>
-                        <Typography variant="caption" display="block" sx={{ mt: 0.5, opacity: 0.7 }}>
+                        <Typography
+                          variant="caption"
+                          display="block"
+                          sx={{ mt: 0.5, opacity: 0.7 }}
+                        >
                           Status: {a.status}
                         </Typography>
                       </Box>
@@ -701,8 +812,18 @@ export default function CollaboratorsPage() {
             value={editingCollab?.email || ''}
             onChange={(e) => setEditingCollab({ ...editingCollab, email: e.target.value })}
             placeholder="nome@empresa.com"
-            helperText={editingCollab?.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((editingCollab.email || '').trim().toLowerCase()) ? 'Email inválido' : ' '}
-            error={!!(editingCollab?.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((editingCollab.email || '').trim().toLowerCase()))}
+            helperText={
+              editingCollab?.email &&
+              !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((editingCollab.email || '').trim().toLowerCase())
+                ? 'Email inválido'
+                : ' '
+            }
+            error={
+              !!(
+                editingCollab?.email &&
+                !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((editingCollab.email || '').trim().toLowerCase())
+              )
+            }
             sx={{ mb: 2 }}
             disabled={isLoading}
           />
@@ -719,7 +840,9 @@ export default function CollaboratorsPage() {
             fullWidth
             label="Tech Lead"
             value={editingCollab?.tech_lead_id || ''}
-            onChange={(e) => setEditingCollab({ ...editingCollab, tech_lead_id: e.target.value || null })}
+            onChange={(e) =>
+              setEditingCollab({ ...editingCollab, tech_lead_id: e.target.value || null })
+            }
             sx={{ mb: 2 }}
             disabled={isLoading}
           >
@@ -727,7 +850,9 @@ export default function CollaboratorsPage() {
             {collaborators
               .filter((item) => item.id !== editingCollab?.id)
               .map((item) => (
-                <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
+                <MenuItem key={item.id} value={item.id}>
+                  {item.name}
+                </MenuItem>
               ))}
           </TextField>
           <TextField
@@ -749,7 +874,9 @@ export default function CollaboratorsPage() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseEditDialog} disabled={isLoading}>Cancelar</Button>
+          <Button onClick={handleCloseEditDialog} disabled={isLoading}>
+            Cancelar
+          </Button>
           <Button variant="contained" onClick={handleSaveEdit} disabled={isLoading}>
             {isLoading ? 'Salvando...' : 'Salvar'}
           </Button>
@@ -764,8 +891,15 @@ export default function CollaboratorsPage() {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDeleteConfirm} disabled={isLoading}>Cancelar</Button>
-          <Button color="error" variant="contained" onClick={handleConfirmDelete} disabled={isLoading}>
+          <Button onClick={handleCloseDeleteConfirm} disabled={isLoading}>
+            Cancelar
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={handleConfirmDelete}
+            disabled={isLoading}
+          >
             {isLoading ? 'Excluindo...' : 'Excluir'}
           </Button>
         </DialogActions>
@@ -787,8 +921,18 @@ export default function CollaboratorsPage() {
             value={newCollab.email}
             onChange={(e) => setNewCollab({ ...newCollab, email: e.target.value })}
             placeholder="nome@empresa.com"
-            helperText={newCollab.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((newCollab.email || '').trim().toLowerCase()) ? 'Email inválido' : ' '}
-            error={!!(newCollab.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((newCollab.email || '').trim().toLowerCase()))}
+            helperText={
+              newCollab.email &&
+              !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((newCollab.email || '').trim().toLowerCase())
+                ? 'Email inválido'
+                : ' '
+            }
+            error={
+              !!(
+                newCollab.email &&
+                !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((newCollab.email || '').trim().toLowerCase())
+              )
+            }
             sx={{ mb: 2 }}
           />
           <TextField
@@ -808,7 +952,9 @@ export default function CollaboratorsPage() {
           >
             <MenuItem value="">Sem vínculo</MenuItem>
             {collaborators.map((item) => (
-              <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
+              <MenuItem key={item.id} value={item.id}>
+                {item.name}
+              </MenuItem>
             ))}
           </TextField>
           <TextField
@@ -829,7 +975,9 @@ export default function CollaboratorsPage() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Cancelar</Button>
-          <Button variant="contained" onClick={handleCreate}>Salvar</Button>
+          <Button variant="contained" onClick={handleCreate}>
+            Salvar
+          </Button>
         </DialogActions>
       </Dialog>
     </Container>
