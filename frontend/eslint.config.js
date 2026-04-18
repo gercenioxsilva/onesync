@@ -22,6 +22,8 @@ export default [
         FormData: 'readonly',
         FileReader: 'readonly',
         Blob: 'readonly',
+        localStorage: 'readonly',
+        sessionStorage: 'readonly',
       },
     },
     plugins: {
