@@ -28,7 +28,6 @@ import {
   DragOverlay,
 } from '@dnd-kit/core'
 import {
-  arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
@@ -55,7 +54,7 @@ const STATUS_COLUMNS = [
 ]
 
 // Card component with drag/sortable support
-function ActionCard({ item, onDelete, onMove }) {
+function ActionCard({ item, onDelete, onMove: _onMove }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: item.id,
   })

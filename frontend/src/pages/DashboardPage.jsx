@@ -91,6 +91,7 @@ export default function DashboardPage() {
         setTeamPriorities([])
         setPriorityActions([])
       })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

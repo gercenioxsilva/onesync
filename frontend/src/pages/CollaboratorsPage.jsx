@@ -11,7 +11,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Divider,
   Drawer,
   FormControlLabel,
   IconButton,

@@ -110,7 +110,6 @@ export default function SettingsPage() {
   useEffect(() => {
     if (tab === 0) loadUsers()
     if (tab === 1) loadTenant()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab])
 
   // ── Invite ────────────────────────────────────────────────────
