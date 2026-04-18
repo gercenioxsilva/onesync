@@ -136,7 +136,7 @@ class AIProcessingService:
             
             # Try to update log with error
             try:
-                log = self.db.execute(
+                log: AIProcessingLogModel | None = self.db.execute(
                     select(AIProcessingLogModel).where(
                         AIProcessingLogModel.one_on_one_id == one_on_one_id,
                         AIProcessingLogModel.tenant_id == tenant_id,
@@ -224,13 +224,13 @@ class AIProcessingService:
         offset: int = 0
     ) -> list[AIProcessingLogModel]:
         """Get processing logs for a tenant"""
-        return self.db.execute(
+        return list(self.db.execute(
             select(AIProcessingLogModel)
             .where(AIProcessingLogModel.tenant_id == tenant_id)
             .order_by(AIProcessingLogModel.created_at.desc())
             .limit(limit)
             .offset(offset)
-        ).scalars().all()
+        ).scalars().all())
     
     def get_one_on_one_processing_log(self, one_on_one_id: str) -> Optional[AIProcessingLogModel]:
         """Get latest processing log for a 1:1 meeting"""

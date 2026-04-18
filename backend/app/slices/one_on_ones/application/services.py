@@ -102,11 +102,11 @@ class OneOnOneService:
         )
 
         model.collaborator_id = collaborator_id
-        model.meeting_date = meeting_date
-        model.mood_score = mood_score
+        model.meeting_date = meeting_date  # type: ignore[assignment]
+        model.mood_score = mood_score  # type: ignore[assignment]
         model.summary = summary.strip()
         model.next_steps = next_steps.strip()
-        model.next_meeting_date = next_meeting_date
+        model.next_meeting_date = next_meeting_date  # type: ignore[assignment]
         model.risk_signal = session.risk_signal()
 
         self.db.add(model)

@@ -66,7 +66,7 @@ async def import_collaborators_csv(
     db: Session = Depends(get_db),
     current_user: AuthContext = Depends(require_roles("OWNER", "ADMIN", "TECH_LEAD")),
 ):
-    if not file.filename.lower().endswith(".csv"):
+    if not (file.filename or "").lower().endswith(".csv"):
         raise HTTPException(status_code=400, detail="Envie um arquivo .csv")
 
     try:

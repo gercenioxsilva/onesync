@@ -102,7 +102,7 @@ class OpenAIProvider(AIProvider):
             raise
     
     @staticmethod
-    def _validate_mood_score(score: any) -> int:
+    def _validate_mood_score(score: object) -> int:
         """Validate and normalize mood score to 0-10"""
         try:
             mood = int(score)
