@@ -28,20 +28,20 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/people_db
-      - ENVIRONMENT=local
-      - ENABLE_SCHEMA_AUTOCREATE=true
-      - CORS_ORIGINS=["http://localhost:5173"]
-      - TRACKER_CSV_PATH=/data/01_TRACKER_TIME.csv
+      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@db:5432/people_db}
+      - ENVIRONMENT=${ENVIRONMENT:-local}
+      - ENABLE_SCHEMA_AUTOCREATE=${ENABLE_SCHEMA_AUTOCREATE:-true}
+      - CORS_ORIGINS=${CORS_ORIGINS:-["http://localhost:5173"]}
+      - TRACKER_CSV_PATH=/workspace-data/01_TRACKER_TIME.csv
       - PEOPLE_SOURCE_DIR=/workspace-data
-      - AUTH_SECRET_KEY=local-dev-secret-key-change-me
-      - AUTH_BOOTSTRAP_ENABLED=true
-      - AUTH_BOOTSTRAP_OWNER_EMAIL=admin@people.local
-      - AUTH_BOOTSTRAP_OWNER_PASSWORD=admin123
-      - AUTH_BOOTSTRAP_PLAN=FREE
+      - AUTH_SECRET_KEY=${AUTH_SECRET_KEY:-local-dev-secret-key-change-me}
+      - AUTH_BOOTSTRAP_ENABLED=${AUTH_BOOTSTRAP_ENABLED:-true}
+      - AUTH_BOOTSTRAP_OWNER_EMAIL=${AUTH_BOOTSTRAP_OWNER_EMAIL:-admin@people.local}
+      - AUTH_BOOTSTRAP_OWNER_PASSWORD=${AUTH_BOOTSTRAP_OWNER_PASSWORD:-admin123}
+      - AUTH_BOOTSTRAP_PLAN=${AUTH_BOOTSTRAP_PLAN:-FREE}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
     volumes:
       - ./backend:/app
-      - ../01_TRACKER_TIME.csv:/data/01_TRACKER_TIME.csv:ro
       - ../:/workspace-data:ro
     depends_on:
       db:
@@ -81,11 +81,10 @@ services:
     command: python -m app.scripts.seed_collaborators
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/people_db
-      - TRACKER_CSV_PATH=/data/01_TRACKER_TIME.csv
+      - TRACKER_CSV_PATH=/workspace-data/01_TRACKER_TIME.csv
       - PEOPLE_SOURCE_DIR=/workspace-data
     volumes:
       - ./backend:/app
-      - ../01_TRACKER_TIME.csv:/data/01_TRACKER_TIME.csv:ro
       - ../:/workspace-data:ro
     depends_on:
       db:

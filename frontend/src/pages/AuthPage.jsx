@@ -271,77 +271,213 @@ export default function AuthPage() {
             </Box>
 
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2.5 }}>
+              {/* Plano Starter */}
               <Paper
                 sx={{
                   p: 3,
                   borderRadius: 4,
-                  bgcolor: 'rgba(15,23,42,0.26)',
+                  bgcolor: 'rgba(15,23,42,0.55)',
                   color: 'white',
                   border: '1px solid rgba(255,255,255,0.12)',
                   boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 2,
                 }}
               >
-                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 800 }}>
-                    Plano Free
+                <Box>
+                  <Typography variant="h6" sx={{ fontWeight: 800, mb: 0.5 }}>
+                    Starter
                   </Typography>
-                  <Chip
-                    label="Entrada rápida"
-                    size="small"
-                    sx={{ bgcolor: 'rgba(34,197,94,0.18)', color: '#D1FAE5', fontWeight: 700 }}
-                  />
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.65)' }}>
+                    Ideal para começar a gestão de 1:1 e PDI com simplicidade e zero custo inicial.
+                  </Typography>
+                </Box>
+
+                <Box>
+                  <Typography component="span" sx={{ fontSize: 36, fontWeight: 900, lineHeight: 1 }}>
+                    Gratuito
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', mt: 0.25 }}>
+                    para sempre, sem cartão de crédito
+                  </Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    bgcolor: 'rgba(0,0,0,0.35)',
+                    borderRadius: 2,
+                    p: 1.5,
+                    border: '1px solid rgba(255,255,255,0.08)',
+                  }}
+                >
+                  <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                    25 colaboradores
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.55)' }}>
+                    com recursos essenciais de gestão
+                  </Typography>
+                </Box>
+
+                <Button
+                  variant="contained"
+                  fullWidth
+                  sx={{
+                    background: 'linear-gradient(90deg, #3b82f6, #6366f1)',
+                    fontWeight: 700,
+                    borderRadius: 2,
+                    py: 1.25,
+                    textTransform: 'none',
+                    fontSize: 14,
+                    lineHeight: 1.3,
+                    '&:hover': { background: 'linear-gradient(90deg, #2563eb, #4f46e5)' },
+                  }}
+                >
+                  Começar grátis
+                  <br />
+                  <Typography component="span" variant="caption" sx={{ opacity: 0.8, fontWeight: 400 }}>
+                    Sem cartão de crédito
+                  </Typography>
+                </Button>
+
+                <Stack direction="row" alignItems="center" spacing={0.75} sx={{ color: 'rgba(255,255,255,0.55)' }}>
+                  <Typography variant="caption">☁</Typography>
+                  <Typography variant="caption">Hospedado pela OneSync</Typography>
                 </Stack>
-                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.82)', mb: 2 }}>
-                  Ideal para começar a gestão de 1:1 e PDI com simplicidade, velocidade e zero custo inicial.
-                </Typography>
-                <Stack spacing={1}>
-                  <Typography variant="body2">✓ Colaboradores ilimitados</Typography>
-                  <Typography variant="body2">✓ Gestão de 1:1, PDI e ações</Typography>
-                  <Typography variant="body2">✓ Visão centralizada do time</Typography>
-                </Stack>
+
+                <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)' }} />
+
+                <Box>
+                  <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                    Este plano inclui:
+                  </Typography>
+                  <Stack spacing={0.75}>
+                    {[
+                      '1 projeto compartilhado',
+                      'Até 25 colaboradores',
+                      'Gestão de 1:1, PDI e ações',
+                      'Visão centralizada do time',
+                      'Suporte via fórum',
+                    ].map((feature) => (
+                      <Stack key={feature} direction="row" alignItems="center" spacing={1}>
+                        <Typography sx={{ color: '#4ade80', fontSize: 13, lineHeight: 1 }}>✓</Typography>
+                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.75)' }}>
+                          {feature}
+                        </Typography>
+                      </Stack>
+                    ))}
+                  </Stack>
+                </Box>
               </Paper>
 
+              {/* Plano Pro */}
               <Paper
                 sx={{
                   p: 3,
                   borderRadius: 4,
-                  background: 'linear-gradient(135deg, rgba(56,189,248,0.18), rgba(34,197,94,0.10))',
+                  bgcolor: 'rgba(15,23,42,0.55)',
                   color: 'white',
-                  border: '1px solid rgba(125,211,252,0.28)',
-                  boxShadow: '0 16px 40px rgba(8, 47, 73, 0.22)',
-                  position: 'relative',
-                  overflow: 'hidden',
+                  border: '1px solid rgba(255,255,255,0.18)',
+                  boxShadow: '0 0 0 1px rgba(99,102,241,0.3), 0 16px 40px rgba(8,47,73,0.22)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 2,
                 }}
               >
+                <Box>
+                  <Typography variant="h6" sx={{ fontWeight: 800, mb: 0.5 }}>
+                    Pro
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.65)' }}>
+                    Para equipes que precisam de integrações, automação e experiência sob medida para escalar.
+                  </Typography>
+                </Box>
+
+                <Box>
+                  <Stack direction="row" alignItems="baseline" spacing={0.5}>
+                    <Typography component="span" sx={{ fontSize: 36, fontWeight: 900, lineHeight: 1 }}>
+                      Sob consulta
+                    </Typography>
+                  </Stack>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', mt: 0.25 }}>
+                    personalizado para sua operação
+                  </Typography>
+                </Box>
+
                 <Box
                   sx={{
-                    position: 'absolute',
-                    top: -18,
-                    right: -18,
-                    width: 110,
-                    height: 110,
-                    borderRadius: '50%',
-                    bgcolor: 'rgba(255,255,255,0.08)',
+                    bgcolor: 'rgba(99,102,241,0.15)',
+                    borderRadius: 2,
+                    p: 1.5,
+                    border: '1px solid rgba(99,102,241,0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
                   }}
-                />
-                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5, position: 'relative' }}>
-                  <Typography variant="h6" sx={{ fontWeight: 800 }}>
-                    Plano Custom
+                >
+                  <Box>
+                    <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                      Colaboradores ilimitados
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.55)' }}>
+                      número customizável por contrato
+                    </Typography>
+                  </Box>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: 18 }}>⌄</Typography>
+                </Box>
+
+                <Button
+                  variant="contained"
+                  fullWidth
+                  sx={{
+                    background: 'linear-gradient(90deg, #6366f1, #8b5cf6)',
+                    fontWeight: 700,
+                    borderRadius: 2,
+                    py: 1.25,
+                    textTransform: 'none',
+                    fontSize: 14,
+                    lineHeight: 1.3,
+                    '&:hover': { background: 'linear-gradient(90deg, #4f46e5, #7c3aed)' },
+                  }}
+                >
+                  Falar com vendas
+                  <br />
+                  <Typography component="span" variant="caption" sx={{ opacity: 0.8, fontWeight: 400 }}>
+                    Demonstração gratuita
                   </Typography>
-                  <Chip
-                    label="Mais completo"
-                    size="small"
-                    sx={{ bgcolor: 'rgba(255,255,255,0.16)', color: 'white', fontWeight: 700 }}
-                  />
+                </Button>
+
+                <Stack direction="row" alignItems="center" spacing={0.75} sx={{ color: 'rgba(255,255,255,0.55)' }}>
+                  <Typography variant="caption">☁</Typography>
+                  <Typography variant="caption">Hospedado pela OneSync</Typography>
                 </Stack>
-                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.86)', mb: 2, position: 'relative' }}>
-                  Para operações que precisam de integração, automação e uma experiência sob medida para escalar a gestão.
-                </Typography>
-                <Stack spacing={1} sx={{ position: 'relative' }}>
-                  <Typography variant="body2">✓ Integrações com Google Meet e Microsoft Teams</Typography>
-                  <Typography variant="body2">✓ Fluxos personalizados e evoluções sob demanda</Typography>
-                  <Typography variant="body2">✓ Experiência alinhada à realidade da empresa</Typography>
-                </Stack>
+
+                <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)' }} />
+
+                <Box>
+                  <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                    Tudo do Starter, mais:
+                  </Typography>
+                  <Stack spacing={0.75}>
+                    {[
+                      'Projetos ilimitados',
+                      'Colaboradores sem limite',
+                      '7 dias de histórico de insights',
+                      'Integrações com Google Meet e Teams',
+                      'Fluxos personalizados sob demanda',
+                      'Funções de administrador',
+                      'Variáveis globais',
+                      'Histórico de reuniões e PDIs',
+                    ].map((feature) => (
+                      <Stack key={feature} direction="row" alignItems="center" spacing={1}>
+                        <Typography sx={{ color: '#4ade80', fontSize: 13, lineHeight: 1 }}>✓</Typography>
+                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.75)' }}>
+                          {feature}
+                        </Typography>
+                      </Stack>
+                    ))}
+                  </Stack>
+                </Box>
               </Paper>
             </Box>
           </Paper>

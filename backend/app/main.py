@@ -42,7 +42,7 @@ def _bootstrap_collaborators_if_needed(db, tenant_id: str) -> None:
         return
 
     tracker_path = Path(settings.tracker_csv_path)
-    if not tracker_path.exists():
+    if not tracker_path.is_file():
         return
 
     if settings.people_source_dir:
