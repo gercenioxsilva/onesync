@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 import secrets
 
 from fastapi import Depends, HTTPException, status
@@ -43,7 +43,7 @@ def verify_password(password: str, password_hash: str) -> bool:
 
 
 def create_access_token(user_id: str, tenant_id: str, role: str, email: str) -> str:
-    expires_at = datetime.now(datetime.UTC) + timedelta(
+    expires_at = datetime.now(UTC) + timedelta(
         minutes=settings.auth_access_token_expire_minutes,
     )
     payload = {
