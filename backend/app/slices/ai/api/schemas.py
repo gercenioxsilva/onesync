@@ -12,7 +12,7 @@ class AIConfigCreate(BaseModel):
     max_tokens: int = Field(default=1000, ge=100, le=4000)
     monthly_quota: int = Field(default=10, ge=0)
     prompt_template: str = Field(default="", description="Custom prompt template")
-    
+
     @field_validator("provider")
     @classmethod
     def validate_provider(cls, v: str) -> str:
@@ -30,7 +30,7 @@ class AIConfigUpdate(BaseModel):
     max_tokens: int | None = Field(None, ge=100, le=4000)
     monthly_quota: int | None = Field(None, ge=0)
     prompt_template: str | None = Field(None)
-    
+
     @field_validator("provider")
     @classmethod
     def validate_provider(cls, v: str | None) -> str | None:
@@ -53,10 +53,10 @@ class AIConfigOut(BaseModel):
     api_key_masked: str = Field(default="")
     created_at: datetime
     updated_at: datetime
-    
+
     class Config:
         from_attributes = True
-    
+
     @field_validator("api_key_masked", mode="before")
     @classmethod
     def mask_api_key(cls, v, info):
@@ -86,7 +86,7 @@ class AIProcessingLogOut(BaseModel):
     retry_count: int
     created_at: datetime
     updated_at: datetime
-    
+
     class Config:
         from_attributes = True
 
@@ -95,7 +95,7 @@ class ProcessOneOnOneRequest(BaseModel):
     one_on_one_id: str = Field(..., description="ID of the 1:1 meeting to process")
     transcription: str = Field(..., description="Transcription or meeting notes to process")
     input_type: str = Field(default="transcription", description="Type of input: transcription, audio_url, manual_text")
-    
+
     @field_validator("transcription")
     @classmethod
     def validate_transcription(cls, v: str) -> str:

@@ -14,11 +14,6 @@ from app.slices.ai.api.schemas import (
 )
 from app.slices.ai.application.services import AIProcessingService
 
-logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api/ai", tags=["ai"])
-
-
-@router.get("/config", response_model=AIConfigOut)
 def get_ai_config(
     current_user: AuthContext = Depends(get_current_user),
     db: Session = Depends(get_db),
