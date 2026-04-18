@@ -136,18 +136,18 @@ class AIProcessingService:
             
             # Try to update log with error
             try:
-                log: AIProcessingLogModel | None = self.db.execute(
+                error_log: AIProcessingLogModel | None = self.db.execute(
                     select(AIProcessingLogModel).where(
                         AIProcessingLogModel.one_on_one_id == one_on_one_id,
                         AIProcessingLogModel.tenant_id == tenant_id,
                         AIProcessingLogModel.status == "processing"
                     )
                 ).scalar_one_or_none()
-                
-                if log:
-                    log.status = "failed"
-                    log.error_message = str(e)
-                    log.retry_count += 1
+
+                if error_log:
+                    error_log.status = "failed"
+                    error_log.error_message = str(e)
+                    error_log.retry_count += 1
                     self.db.commit()
             except Exception as db_error:
                 logger.error(f"Failed to update processing log: {str(db_error)}")
