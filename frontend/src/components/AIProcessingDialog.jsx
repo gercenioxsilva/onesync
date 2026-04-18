@@ -12,16 +12,9 @@ import {
   Alert,
   CircularProgress,
   Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Paper,
 } from '@mui/material'
 import LightbulbIcon from '@mui/icons-material/Lightbulb'
-import Sparkles from '@mui/icons-material/Stars'
 import { aiAPI } from '../api/client'
 
 export default function AIProcessingDialog({ open, onClose, oneOnOneId, onSuccess }) {

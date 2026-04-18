@@ -9,25 +9,25 @@ from app.core.auth import get_current_user, hash_password
 from app.core.config import settings
 from app.core.database import Base, SessionLocal, engine
 from app.core.tasks import start_scheduler, stop_scheduler
+from app.slices.actions.api.router import router as actions_router
+from app.slices.actions.infrastructure import models as _action_models  # noqa: F401
 from app.slices.ai.api.router import router as ai_router
+from app.slices.ai.infrastructure import models as _ai_models  # noqa: F401
 from app.slices.auth.api.router import router as auth_router
-from app.slices.collaborators.application.services import CollaboratorService
 from app.slices.collaborators.api.router import router as collaborators_router
-from app.slices.tenants.api.router import router as tenants_router
+from app.slices.collaborators.application.services import CollaboratorService
+from app.slices.collaborators.infrastructure import models as _collaborator_models  # noqa: F401
 from app.slices.collaborators.infrastructure.models import CollaboratorModel
 from app.slices.one_on_ones.api.router import router as one_on_ones_router
+from app.slices.one_on_ones.infrastructure import models as _one_on_one_models  # noqa: F401
 from app.slices.pdis.api.router import router as pdis_router
+from app.slices.pdis.infrastructure import models as _pdi_models  # noqa: F401
 from app.slices.reporting.api.router import router as reporting_router
-from app.slices.users.api.router import router as users_router
-from app.slices.collaborators.infrastructure import models as _collaborator_models
-from app.slices.one_on_ones.infrastructure import models as _one_on_one_models
-from app.slices.pdis.infrastructure import models as _pdi_models
-from app.slices.tenants.infrastructure import models as _tenant_models
-from app.slices.users.infrastructure import models as _user_models
-from app.slices.ai.infrastructure import models as _ai_models
-from app.slices.actions.api.router import router as actions_router
-from app.slices.actions.infrastructure import models as _action_models
+from app.slices.tenants.api.router import router as tenants_router
+from app.slices.tenants.infrastructure import models as _tenant_models  # noqa: F401
 from app.slices.tenants.infrastructure.models import TenantModel
+from app.slices.users.api.router import router as users_router
+from app.slices.users.infrastructure import models as _user_models  # noqa: F401
 from app.slices.users.infrastructure.models import UserModel
 
 
@@ -112,7 +112,7 @@ def on_startup() -> None:
         _bootstrap_collaborators_if_needed(db, tenant.id)
     finally:
         db.close()
-    
+
     # Start background task scheduler
     start_scheduler()
 
