@@ -75,7 +75,7 @@ def create_ai_config(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to create AI configuration: {str(e)}",
-        )
+        ) from e
 
 
 @router.patch("/config", response_model=AIConfigOut)
@@ -107,7 +107,7 @@ def update_ai_config(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to update AI configuration: {str(e)}",
-        )
+        ) from e
 
 
 @router.post("/process", response_model=ProcessOneOnOneResponse)
@@ -140,13 +140,13 @@ async def process_one_on_one(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
-        )
+        ) from e
     except Exception as e:
         logger.error(f"Error processing 1:1: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to process 1:1 with AI. Please try again later.",
-        )
+        ) from e
 
 
 @router.get("/logs", response_model=list[AIProcessingLogOut])
@@ -171,7 +171,7 @@ def get_processing_logs(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to fetch processing logs",
-        )
+        ) from e
 
 
 @router.get("/logs/{one_on_one_id}", response_model=AIProcessingLogOut)
@@ -207,4 +207,4 @@ def get_one_on_one_processing_log(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to fetch processing log",
-        )
+        ) from e
