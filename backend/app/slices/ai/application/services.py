@@ -1,7 +1,6 @@
 import json
 import logging
-from datetime import datetime
-from typing import Optional
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -24,7 +23,7 @@ class AIProcessingService:
         tenant_id: str,
         one_on_one_id: str,
         transcription: str,
-        user_id: Optional[str] = None,
+        user_id: str | None = None,
         input_type: str = "transcription"
     ) -> dict:
         """
@@ -101,7 +100,7 @@ class AIProcessingService:
             log.input_tokens = result["input_tokens"]
             log.output_tokens = result["output_tokens"]
             log.estimated_cost = result["cost"]
-            log.updated_at = datetime.utcnow()
+            log.updated_at = datetime.now(UTC)
             
             # Update 1:1 with extracted data
             one_on_one.summary = result["summary"]
@@ -154,7 +153,7 @@ class AIProcessingService:
             
             raise
     
-    def get_ai_config(self, tenant_id: str) -> Optional[AIConfigModel]:
+    def get_ai_config(self, tenant_id: str) -> AIConfigModel | None:
         """Get AI configuration for a tenant"""
         return self.db.execute(
             select(AIConfigModel).where(AIConfigModel.tenant_id == tenant_id)
@@ -211,7 +210,7 @@ class AIProcessingService:
             if key in allowed_fields and value is not None:
                 setattr(config, key, value)
         
-        config.updated_at = datetime.utcnow()
+        config.updated_at = datetime.now(UTC)
         self.db.commit()
         self.db.refresh(config)
         
@@ -232,7 +231,7 @@ class AIProcessingService:
             .offset(offset)
         ).scalars().all())
     
-    def get_one_on_one_processing_log(self, one_on_one_id: str) -> Optional[AIProcessingLogModel]:
+    def get_one_on_one_processing_log(self, one_on_one_id: str) -> AIProcessingLogModel | None:
         """Get latest processing log for a 1:1 meeting"""
         return self.db.execute(
             select(AIProcessingLogModel)

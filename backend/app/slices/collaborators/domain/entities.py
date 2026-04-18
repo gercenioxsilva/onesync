@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import StrEnum
 
 
@@ -31,16 +31,16 @@ class Collaborator:
             self.risk = RiskLevel.MEDIUM
         elif self.risk == RiskLevel.MEDIUM:
             self.risk = RiskLevel.HIGH
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now(UTC)
 
     def reduce_risk(self) -> None:
         if self.risk == RiskLevel.HIGH:
             self.risk = RiskLevel.MEDIUM
         elif self.risk == RiskLevel.MEDIUM:
             self.risk = RiskLevel.LOW
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now(UTC)
 
     def start_pdi(self) -> None:
         if self.pdi_status == PdiStatus.NO_PLAN:
             self.pdi_status = PdiStatus.IN_PROGRESS
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now(UTC)

@@ -23,9 +23,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Card,
-  CardContent,
-  CardHeader,
 } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import CodeIcon from '@mui/icons-material/Code'
@@ -97,7 +94,6 @@ export default function AIConfigTab() {
   useEffect(() => {
     loadConfig()
     loadLogs()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Save config

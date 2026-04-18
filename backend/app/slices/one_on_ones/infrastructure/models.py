@@ -1,5 +1,5 @@
 import uuid
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 
 from sqlalchemy import Date, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
@@ -23,4 +23,4 @@ class OneOnOneModel(Base):
     next_steps: Mapped[str] = mapped_column(Text, default="")
     next_meeting_date: Mapped[date] = mapped_column(Date, nullable=True)
     risk_signal: Mapped[str] = mapped_column(String(16), default="NEUTRO")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
