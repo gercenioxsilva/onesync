@@ -15,9 +15,7 @@ def get_tenant(
     current_user: AuthContext = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    tenant = db.scalar(
-        select(TenantModel).where(TenantModel.id == current_user.tenant_id)
-    )
+    tenant = db.scalar(select(TenantModel).where(TenantModel.id == current_user.tenant_id))
     if not tenant:
         raise HTTPException(status_code=404, detail="Tenant não encontrado")
     return tenant
@@ -29,9 +27,7 @@ def update_tenant(
     current_user: AuthContext = Depends(require_roles("OWNER", "ADMIN")),
     db: Session = Depends(get_db),
 ):
-    tenant = db.scalar(
-        select(TenantModel).where(TenantModel.id == current_user.tenant_id)
-    )
+    tenant = db.scalar(select(TenantModel).where(TenantModel.id == current_user.tenant_id))
     if not tenant:
         raise HTTPException(status_code=404, detail="Tenant não encontrado")
 

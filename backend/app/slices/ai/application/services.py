@@ -42,10 +42,7 @@ class AIProcessingService:
                 raise ValueError("AI API key not configured for this tenant")
 
             # Check quota
-            if (
-                ai_config.monthly_quota > 0
-                and ai_config.monthly_usage >= ai_config.monthly_quota
-            ):
+            if ai_config.monthly_quota > 0 and ai_config.monthly_usage >= ai_config.monthly_quota:
                 raise ValueError(
                     f"Monthly quota exceeded ({ai_config.monthly_usage}/{ai_config.monthly_quota})"
                 )

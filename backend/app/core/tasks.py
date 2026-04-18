@@ -61,15 +61,19 @@ def stop_scheduler() -> None:
 def retry_failed_processing() -> None:
     db = SessionLocal()
     try:
-        failed_logs = db.execute(
-            select(AIProcessingLogModel)
-            .where(
-                AIProcessingLogModel.status == "failed",
-                AIProcessingLogModel.retry_count < 3,
+        failed_logs = (
+            db.execute(
+                select(AIProcessingLogModel)
+                .where(
+                    AIProcessingLogModel.status == "failed",
+                    AIProcessingLogModel.retry_count < 3,
+                )
+                .order_by(AIProcessingLogModel.created_at.desc())
+                .limit(10)
             )
-            .order_by(AIProcessingLogModel.created_at.desc())
-            .limit(10)
-        ).scalars().all()
+            .scalars()
+            .all()
+        )
 
         if not failed_logs:
             return

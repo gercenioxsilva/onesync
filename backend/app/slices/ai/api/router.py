@@ -30,8 +30,7 @@ def get_ai_config(
 
     if not config:
         raise HTTPException(
-            status_code=404,
-            detail="AI configuration not found. Please set up AI first."
+            status_code=404, detail="AI configuration not found. Please set up AI first."
         )
 
     return config
@@ -50,7 +49,7 @@ def create_ai_config(
     if existing:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="AI configuration already exists for this tenant. Use PATCH to update."
+            detail="AI configuration already exists for this tenant. Use PATCH to update.",
         )
 
     try:
@@ -91,8 +90,7 @@ def update_ai_config(
     config = service.get_ai_config(current_user.tenant_id)
     if not config:
         raise HTTPException(
-            status_code=404,
-            detail="AI configuration not found. Please create one first."
+            status_code=404, detail="AI configuration not found. Please create one first."
         )
 
     try:

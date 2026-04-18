@@ -21,15 +21,13 @@ class CollaboratorRepository:
 
     def get_by_id(self, tenant_id: str, collaborator_id: str) -> CollaboratorModel | None:
         query = select(CollaboratorModel).where(
-            (CollaboratorModel.id == collaborator_id)
-            & (CollaboratorModel.tenant_id == tenant_id)
+            (CollaboratorModel.id == collaborator_id) & (CollaboratorModel.tenant_id == tenant_id)
         )
         return self.db.scalar(query)
 
     def get_by_name(self, tenant_id: str, name: str) -> CollaboratorModel | None:
         query = select(CollaboratorModel).where(
-            (CollaboratorModel.tenant_id == tenant_id)
-            & (CollaboratorModel.name == name)
+            (CollaboratorModel.tenant_id == tenant_id) & (CollaboratorModel.name == name)
         )
         return self.db.scalar(query)
 
@@ -54,8 +52,7 @@ class CollaboratorRepository:
         )
         self.db.execute(
             delete(PdiModel).where(
-                (PdiModel.collaborator_id == model.id)
-                & (PdiModel.tenant_id == model.tenant_id)
+                (PdiModel.collaborator_id == model.id) & (PdiModel.tenant_id == model.tenant_id)
             )
         )
         self.db.delete(model)

@@ -16,14 +16,12 @@ class ReportingService:
         )
         high_risk = self.db.scalar(
             select(func.count(CollaboratorModel.id)).where(
-                (CollaboratorModel.tenant_id == tenant_id)
-                & (CollaboratorModel.risk == "ALTO")
+                (CollaboratorModel.tenant_id == tenant_id) & (CollaboratorModel.risk == "ALTO")
             )
         )
         pdi_in_progress = self.db.scalar(
             select(func.count(PdiModel.id)).where(
-                (PdiModel.tenant_id == tenant_id)
-                & (PdiModel.status == "EM_ANDAMENTO")
+                (PdiModel.tenant_id == tenant_id) & (PdiModel.status == "EM_ANDAMENTO")
             )
         )
         recent_ones = self.db.scalar(
@@ -40,20 +38,17 @@ class ReportingService:
     def risk_breakdown(self, tenant_id: str) -> dict:
         low = self.db.scalar(
             select(func.count(CollaboratorModel.id)).where(
-                (CollaboratorModel.tenant_id == tenant_id)
-                & (CollaboratorModel.risk == "BAIXO")
+                (CollaboratorModel.tenant_id == tenant_id) & (CollaboratorModel.risk == "BAIXO")
             )
         )
         medium = self.db.scalar(
             select(func.count(CollaboratorModel.id)).where(
-                (CollaboratorModel.tenant_id == tenant_id)
-                & (CollaboratorModel.risk == "MEDIO")
+                (CollaboratorModel.tenant_id == tenant_id) & (CollaboratorModel.risk == "MEDIO")
             )
         )
         high = self.db.scalar(
             select(func.count(CollaboratorModel.id)).where(
-                (CollaboratorModel.tenant_id == tenant_id)
-                & (CollaboratorModel.risk == "ALTO")
+                (CollaboratorModel.tenant_id == tenant_id) & (CollaboratorModel.risk == "ALTO")
             )
         )
         return {"low": low or 0, "medium": medium or 0, "high": high or 0}
@@ -62,7 +57,9 @@ class ReportingService:
         """Get collaborators with next 1:1 date and PDI progress enriched"""
         collaborators = list(
             self.db.scalars(
-                select(CollaboratorModel).where(CollaboratorModel.tenant_id == tenant_id).order_by(CollaboratorModel.name)
+                select(CollaboratorModel)
+                .where(CollaboratorModel.tenant_id == tenant_id)
+                .order_by(CollaboratorModel.name)
             )
         )
 
@@ -85,13 +82,15 @@ class ReportingService:
                 .limit(1)
             )
 
-            result.append({
-                "id": collab.id,
-                "name": collab.name,
-                "email": collab.email,
-                "risk": collab.risk,
-                "next_one_on_one": next_one_on_one.isoformat() if next_one_on_one else None,
-                "progress": latest_pdi or 0,
-            })
+            result.append(
+                {
+                    "id": collab.id,
+                    "name": collab.name,
+                    "email": collab.email,
+                    "risk": collab.risk,
+                    "next_one_on_one": next_one_on_one.isoformat() if next_one_on_one else None,
+                    "progress": latest_pdi or 0,
+                }
+            )
 
         return result

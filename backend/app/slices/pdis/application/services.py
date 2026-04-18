@@ -72,7 +72,6 @@ class PdiService:
 
     def list_by_collaborator(self, tenant_id: str, collaborator_id: str) -> list[PdiModel]:
         query = select(PdiModel).where(
-            (PdiModel.tenant_id == tenant_id)
-            & (PdiModel.collaborator_id == collaborator_id)
+            (PdiModel.tenant_id == tenant_id) & (PdiModel.collaborator_id == collaborator_id)
         )
         return list(self.db.scalars(query).all())

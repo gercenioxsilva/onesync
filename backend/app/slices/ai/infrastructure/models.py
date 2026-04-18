@@ -11,7 +11,9 @@ class AIConfigModel(Base):
     __tablename__ = "ai_configs"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    tenant_id: Mapped[str] = mapped_column(String(36), ForeignKey("tenants.id", ondelete="CASCADE"), index=True, unique=True)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), index=True, unique=True
+    )
 
     # Provider: openai, gemini, azure
     provider: Mapped[str] = mapped_column(String(50), default="openai")
@@ -26,7 +28,9 @@ class AIConfigModel(Base):
     auto_process_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # Custom prompt template
-    prompt_template: Mapped[str] = mapped_column(Text, default="""Analyze this 1:1 meeting transcription between a manager and a team member.
+    prompt_template: Mapped[str] = mapped_column(
+        Text,
+        default="""Analyze this 1:1 meeting transcription between a manager and a team member.
 Extract the following information in JSON format:
 {
     "summary": "Executive summary of the conversation (max 500 chars)",
@@ -37,7 +41,8 @@ Extract the following information in JSON format:
 }
 
 Transcription:
-{transcription}""")
+{transcription}""",
+    )
 
     # Temperature for model (0.0-1.0)
     temperature: Mapped[float] = mapped_column(default=0.7)
@@ -50,15 +55,21 @@ Transcription:
     monthly_usage: Mapped[int] = mapped_column(default=0)
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC)
+    )
 
 
 class AIProcessingLogModel(Base):
     __tablename__ = "ai_processing_logs"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    tenant_id: Mapped[str] = mapped_column(String(36), ForeignKey("tenants.id", ondelete="CASCADE"), index=True)
-    one_on_one_id: Mapped[str] = mapped_column(String(36), ForeignKey("one_on_ones.id", ondelete="CASCADE"), index=True)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), index=True
+    )
+    one_on_one_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("one_on_ones.id", ondelete="CASCADE"), index=True
+    )
 
     # Processing info
     provider: Mapped[str] = mapped_column(String(50))
@@ -91,7 +102,13 @@ class AIProcessingLogModel(Base):
     retry_count: Mapped[int] = mapped_column(default=0)
 
     # User who triggered processing
-    processed_by_user_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    processed_by_user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), index=True)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(UTC), index=True
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC)
+    )

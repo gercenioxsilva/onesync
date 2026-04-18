@@ -11,7 +11,9 @@ class ActionModel(Base):
     __tablename__ = "actions"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    tenant_id: Mapped[str] = mapped_column(String(36), ForeignKey("tenants.id", ondelete="CASCADE"), index=True)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), index=True
+    )
     collaborator_id: Mapped[str | None] = mapped_column(
         String(36),
         ForeignKey("collaborators.id", ondelete="SET NULL"),
@@ -24,4 +26,6 @@ class ActionModel(Base):
     category: Mapped[str] = mapped_column(String(64), default="")
     status: Mapped[str] = mapped_column(String(24), default="NAO_INICIADO")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC)
+    )

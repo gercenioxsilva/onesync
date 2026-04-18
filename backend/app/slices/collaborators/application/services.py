@@ -279,7 +279,9 @@ class CollaboratorService:
             tech_lead_id = self._pick_value(row, "tech_lead_id", "techleadid", "tl_id") or None
             focus = self._pick_value(row, "principal_foco", "foco", "focus")
             risk = self._normalize_risk(self._pick_value(row, "risco", "risk"))
-            pdi_status = self._normalize_pdi_status(self._pick_value(row, "status_pdi", "pdistatus", "pdi_status"))
+            pdi_status = self._normalize_pdi_status(
+                self._pick_value(row, "status_pdi", "pdistatus", "pdi_status")
+            )
 
             try:
                 email = self._normalize_email(email)
@@ -356,7 +358,10 @@ class CollaboratorService:
         # Get latest PDI (progress + status)
         latest_pdi = self.db.execute(
             select(PdiModel.progress, PdiModel.status)
-            .where((PdiModel.collaborator_id == collaborator.id) & (PdiModel.tenant_id == collaborator.tenant_id))
+            .where(
+                (PdiModel.collaborator_id == collaborator.id)
+                & (PdiModel.tenant_id == collaborator.tenant_id)
+            )
             .order_by(PdiModel.updated_at.desc(), PdiModel.created_at.desc())
             .limit(1)
         ).first()

@@ -124,7 +124,9 @@ def update_risk(
     current_user: AuthContext = Depends(require_roles("OWNER", "ADMIN", "TECH_LEAD")),
 ):
     try:
-        return CollaboratorService(db).change_risk(current_user.tenant_id, collaborator_id, payload.action)
+        return CollaboratorService(db).change_risk(
+            current_user.tenant_id, collaborator_id, payload.action
+        )
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 

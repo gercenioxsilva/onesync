@@ -19,7 +19,9 @@ if settings.database_url.startswith("postgresql"):
     )
 else:
     # SQLite configuration (for backward compatibility)
-    engine = create_engine(settings.database_url, future=True, connect_args={"check_same_thread": False})
+    engine = create_engine(
+        settings.database_url, future=True, connect_args={"check_same_thread": False}
+    )
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 

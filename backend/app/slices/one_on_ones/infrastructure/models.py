@@ -11,7 +11,9 @@ class OneOnOneModel(Base):
     __tablename__ = "one_on_ones"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    tenant_id: Mapped[str] = mapped_column(String(36), ForeignKey("tenants.id", ondelete="CASCADE"), index=True)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), index=True
+    )
     collaborator_id: Mapped[str] = mapped_column(
         String(36),
         ForeignKey("collaborators.id", ondelete="CASCADE"),

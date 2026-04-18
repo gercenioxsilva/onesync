@@ -45,21 +45,16 @@ class OpenAIProvider(AIProvider):
                     f"{self.BASE_URL}/chat/completions",
                     headers={
                         "Authorization": f"Bearer {self.api_key}",
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
                     },
                     json={
                         "model": self.model,
-                        "messages": [
-                            {
-                                "role": "user",
-                                "content": prompt
-                            }
-                        ],
+                        "messages": [{"role": "user", "content": prompt}],
                         "temperature": self.temperature,
                         "max_tokens": self.max_tokens,
-                        "response_format": {"type": "json_object"}
+                        "response_format": {"type": "json_object"},
                     },
-                    timeout=120.0
+                    timeout=120.0,
                 )
 
                 if response.status_code != 200:
@@ -87,12 +82,14 @@ class OpenAIProvider(AIProvider):
                     "summary": str(extracted.get("summary", ""))[:500],
                     "next_steps": str(extracted.get("next_steps", ""))[:500],
                     "mood_score": self._validate_mood_score(extracted.get("mood_score", 5)),
-                    "risk_signal": self._validate_risk_signal(extracted.get("risk_signal", "NEUTRO")),
+                    "risk_signal": self._validate_risk_signal(
+                        extracted.get("risk_signal", "NEUTRO")
+                    ),
                     "key_points": extracted.get("key_points", [])[:10],
                     "input_tokens": input_tokens,
                     "output_tokens": output_tokens,
                     "cost": round(cost, 4),
-                    "raw_response": content
+                    "raw_response": content,
                 }
 
                 return result
@@ -133,21 +130,13 @@ class GeminiProvider(AIProvider):
                     f"{self.BASE_URL}/{model_id}:generateContent",
                     params={"key": self.api_key},
                     json={
-                        "contents": [
-                            {
-                                "parts": [
-                                    {
-                                        "text": prompt
-                                    }
-                                ]
-                            }
-                        ],
+                        "contents": [{"parts": [{"text": prompt}]}],
                         "generationConfig": {
                             "temperature": self.temperature,
-                            "maxOutputTokens": self.max_tokens
-                        }
+                            "maxOutputTokens": self.max_tokens,
+                        },
                     },
-                    timeout=120.0
+                    timeout=120.0,
                 )
 
                 if response.status_code != 200:
@@ -161,7 +150,7 @@ class GeminiProvider(AIProvider):
                 content = data["candidates"][0]["content"]["parts"][0]["text"]
 
                 # Extract JSON from response (Gemini might return markdown)
-                json_match = re.search(r'\{.*\}', content, re.DOTALL)
+                json_match = re.search(r"\{.*\}", content, re.DOTALL)
                 if json_match:
                     extracted = json.loads(json_match.group())
                 else:
@@ -177,13 +166,17 @@ class GeminiProvider(AIProvider):
                 result = {
                     "summary": str(extracted.get("summary", ""))[:500],
                     "next_steps": str(extracted.get("next_steps", ""))[:500],
-                    "mood_score": OpenAIProvider._validate_mood_score(extracted.get("mood_score", 5)),
-                    "risk_signal": OpenAIProvider._validate_risk_signal(extracted.get("risk_signal", "NEUTRO")),
+                    "mood_score": OpenAIProvider._validate_mood_score(
+                        extracted.get("mood_score", 5)
+                    ),
+                    "risk_signal": OpenAIProvider._validate_risk_signal(
+                        extracted.get("risk_signal", "NEUTRO")
+                    ),
                     "key_points": extracted.get("key_points", [])[:10],
                     "input_tokens": int(input_tokens),
                     "output_tokens": int(output_tokens),
                     "cost": round(cost, 6),
-                    "raw_response": content
+                    "raw_response": content,
                 }
 
                 return result
@@ -193,8 +186,9 @@ class GeminiProvider(AIProvider):
             raise
 
 
-def get_provider(provider_name: str, api_key: str, model: str,
-                temperature: float = 0.7, max_tokens: int = 1000) -> AIProvider:
+def get_provider(
+    provider_name: str, api_key: str, model: str, temperature: float = 0.7, max_tokens: int = 1000
+) -> AIProvider:
     """Factory function to get the appropriate AI provider"""
     provider_lower = provider_name.lower()
 

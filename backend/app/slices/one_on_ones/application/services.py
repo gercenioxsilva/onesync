@@ -77,8 +77,7 @@ class OneOnOneService:
     ) -> OneOnOneModel:
         model = self.db.scalar(
             select(OneOnOneModel).where(
-                (OneOnOneModel.id == one_on_one_id)
-                & (OneOnOneModel.tenant_id == tenant_id)
+                (OneOnOneModel.id == one_on_one_id) & (OneOnOneModel.tenant_id == tenant_id)
             )
         )
         if not model:
@@ -117,8 +116,7 @@ class OneOnOneService:
     def delete(self, tenant_id: str, one_on_one_id: str) -> None:
         model = self.db.scalar(
             select(OneOnOneModel).where(
-                (OneOnOneModel.id == one_on_one_id)
-                & (OneOnOneModel.tenant_id == tenant_id)
+                (OneOnOneModel.id == one_on_one_id) & (OneOnOneModel.tenant_id == tenant_id)
             )
         )
         if not model:

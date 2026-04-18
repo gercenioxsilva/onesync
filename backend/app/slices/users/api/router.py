@@ -64,8 +64,7 @@ def update_user_role(
 ):
     user = db.scalar(
         select(UserModel).where(
-            (UserModel.id == user_id)
-            & (UserModel.tenant_id == current_user.tenant_id)
+            (UserModel.id == user_id) & (UserModel.tenant_id == current_user.tenant_id)
         )
     )
     if not user:
@@ -89,8 +88,7 @@ def deactivate_user(
 ):
     user = db.scalar(
         select(UserModel).where(
-            (UserModel.id == user_id)
-            & (UserModel.tenant_id == current_user.tenant_id)
+            (UserModel.id == user_id) & (UserModel.tenant_id == current_user.tenant_id)
         )
     )
     if not user:
@@ -114,8 +112,7 @@ def activate_user(
 ):
     user = db.scalar(
         select(UserModel).where(
-            (UserModel.id == user_id)
-            & (UserModel.tenant_id == current_user.tenant_id)
+            (UserModel.id == user_id) & (UserModel.tenant_id == current_user.tenant_id)
         )
     )
     if not user:
@@ -135,8 +132,7 @@ def delete_user(
 ):
     user = db.scalar(
         select(UserModel).where(
-            (UserModel.id == user_id)
-            & (UserModel.tenant_id == current_user.tenant_id)
+            (UserModel.id == user_id) & (UserModel.tenant_id == current_user.tenant_id)
         )
     )
     if not user:

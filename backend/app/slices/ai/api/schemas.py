@@ -94,7 +94,9 @@ class AIProcessingLogOut(BaseModel):
 class ProcessOneOnOneRequest(BaseModel):
     one_on_one_id: str = Field(..., description="ID of the 1:1 meeting to process")
     transcription: str = Field(..., description="Transcription or meeting notes to process")
-    input_type: str = Field(default="transcription", description="Type of input: transcription, audio_url, manual_text")
+    input_type: str = Field(
+        default="transcription", description="Type of input: transcription, audio_url, manual_text"
+    )
 
     @field_validator("transcription")
     @classmethod

@@ -32,10 +32,7 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
         )
 
     user = db.scalar(
-        select(UserModel).where(
-            (UserModel.email == identifier)
-            & (UserModel.is_active.is_(True))
-        )
+        select(UserModel).where((UserModel.email == identifier) & (UserModel.is_active.is_(True)))
     )
     if not user or not verify_password(payload.password, user.password_hash):
         raise HTTPException(
@@ -57,8 +54,7 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 def login_google(payload: GoogleLoginRequest, db: Session = Depends(get_db)):
     tenant = db.scalar(
         select(TenantModel).where(
-            (TenantModel.cnpj == payload.tenant_cnpj)
-            & (TenantModel.is_active.is_(True))
+            (TenantModel.cnpj == payload.tenant_cnpj) & (TenantModel.is_active.is_(True))
         )
     )
     if not tenant:

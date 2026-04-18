@@ -36,7 +36,9 @@ def _bootstrap_collaborators_if_needed(db, tenant_id: str) -> None:
         return
 
     collaborators_count = db.scalar(
-        select(func.count()).select_from(CollaboratorModel).where(CollaboratorModel.tenant_id == tenant_id)
+        select(func.count())
+        .select_from(CollaboratorModel)
+        .where(CollaboratorModel.tenant_id == tenant_id)
     )
     if collaborators_count and collaborators_count > 0:
         return
@@ -77,7 +79,9 @@ def on_startup() -> None:
 
     db = SessionLocal()
     try:
-        tenant = db.scalar(select(TenantModel).where(TenantModel.cnpj == settings.auth_bootstrap_tenant_cnpj))
+        tenant = db.scalar(
+            select(TenantModel).where(TenantModel.cnpj == settings.auth_bootstrap_tenant_cnpj)
+        )
         if not tenant:
             tenant = TenantModel(
                 name=settings.auth_bootstrap_tenant_name,

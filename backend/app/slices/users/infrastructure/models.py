@@ -9,12 +9,12 @@ from app.core.database import Base
 
 class UserModel(Base):
     __tablename__ = "users"
-    __table_args__ = (
-        UniqueConstraint("tenant_id", "email", name="uq_users_tenant_email"),
-    )
+    __table_args__ = (UniqueConstraint("tenant_id", "email", name="uq_users_tenant_email"),)
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    tenant_id: Mapped[str] = mapped_column(String(36), ForeignKey("tenants.id", ondelete="CASCADE"), index=True)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), index=True
+    )
     full_name: Mapped[str] = mapped_column(String(120), nullable=False)
     email: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     password_hash: Mapped[str] = mapped_column(String(255), default="")
@@ -22,4 +22,6 @@ class UserModel(Base):
     role: Mapped[str] = mapped_column(String(24), default="MEMBER")
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC)
+    )
