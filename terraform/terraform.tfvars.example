@@ -1,0 +1,29 @@
+# Copie este arquivo para terraform.tfvars e preencha os valores
+# NUNCA comite o terraform.tfvars — ele já está no .gitignore
+
+aws_region  = "us-east-1"
+project     = "onesync"
+environment = "mvp"
+
+# Domínio principal da aplicação
+domain_name = "seudominio.com.br"
+
+# EC2 — deixe ec2_key_pair_name vazio para desabilitar SSH
+ec2_instance_type = "t3.small"
+ec2_key_pair_name = ""
+
+# RDS
+db_instance_class    = "db.t3.micro"
+db_name              = "onesync_db"
+db_username          = "onesync_admin"
+db_password          = "CHANGE_ME_min16chars_forte!"
+db_allocated_storage = 20
+
+# Segredos da aplicação
+# Gere o jwt_secret com: openssl rand -hex 32
+jwt_secret               = "CHANGE_ME_openssl_rand_hex_32"
+bootstrap_owner_email    = "admin@seudominio.com.br"
+bootstrap_owner_password = "CHANGE_ME_senha_forte!"
+
+# Google OAuth (opcional — deixe vazio para desabilitar)
+google_client_id = ""

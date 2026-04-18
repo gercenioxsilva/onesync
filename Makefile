@@ -90,6 +90,43 @@ clean-cache:  ## Remove Python/JS cache files locally
 	find . -type d -name node_modules -path "*/frontend/*" -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name dist -exec rm -rf {} + 2>/dev/null || true
 
+# ── Terraform (AWS MVP) ───────────────────────────────────────────────────────
+TF_DIR = terraform
+
+tf-init:      ## Inicializa o Terraform (primeira vez)
+	cd $(TF_DIR) && terraform init
+
+tf-plan:      ## Mostra o plano de execução (não aplica nada)
+	cd $(TF_DIR) && terraform plan
+
+tf-apply:     ## Aplica a infraestrutura na AWS
+	cd $(TF_DIR) && terraform apply
+
+tf-destroy:   ## Destroi toda a infraestrutura (CUIDADO!)
+	cd $(TF_DIR) && terraform destroy
+
+tf-output:    ## Exibe os outputs (URLs, IPs, etc.)
+	cd $(TF_DIR) && terraform output
+
+# ── Deploy (ECR + S3) ─────────────────────────────────────────────────────────
+ECR_URL       ?= $(shell cd $(TF_DIR) && terraform output -raw ecr_backend_url 2>/dev/null)
+S3_BUCKET     ?= $(shell cd $(TF_DIR) && terraform output -raw s3_frontend_bucket 2>/dev/null)
+AWS_REGION    ?= us-east-1
+CDN_ID        ?= $(shell cd $(TF_DIR) && terraform output -raw cloudfront_domain 2>/dev/null)
+
+deploy-backend: ## Build e push da imagem backend para ECR
+	aws ecr get-login-password --region $(AWS_REGION) \
+		| docker login --username AWS --password-stdin $(ECR_URL)
+	docker build -t $(ECR_URL):latest ./backend
+	docker push $(ECR_URL):latest
+	@echo "Imagem enviada. Reinicie o EC2 ou rode: make ec2-restart"
+
+deploy-frontend: ## Build e sync do frontend para S3 + invalida CloudFront
+	cd frontend && npm run build
+	aws s3 sync frontend/dist/ s3://$(S3_BUCKET)/ --delete
+	aws cloudfront create-invalidation \
+		--distribution-id $(CDN_ID) --paths "/*"
+
 # ── Help ──────────────────────────────────────────────────────────────────────
 help:         ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
