@@ -113,8 +113,32 @@ Na tela de colaboradores também é possível:
 
 4. **Deployment**
    - [ ] Docker Compose para local
-   - [ ] CI/CD com GitHub Actions
+   - [x] CI/CD com GitHub Actions
    - [ ] Migração para AWS (RDS, S3, Lambda)
+
+---
+
+## 🚀 Continuous Deployment
+
+A aplicação agora inclui um pipeline de CD que envia o backend para ECR e publica o frontend em um bucket S3 com CloudFront.
+
+### Segredos necessários no GitHub
+
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_REGION`
+- `ECR_REGISTRY` (p.ex. `123456789012.dkr.ecr.us-east-1.amazonaws.com/onesync-backend`)
+- `FRONTEND_BUCKET`
+- `CLOUDFRONT_DISTRIBUTION_ID`
+- `FRONTEND_API_URL` (p.ex. `https://api.seudominio.com.br/api`)
+- `DOMAIN_NAME`
+- `AWS_SECRETSMANAGER_SECRET_ID`
+
+Opcional para reiniciar o backend automaticamente após deploy:
+
+- `EC2_SSH_HOST`
+- `EC2_SSH_USER`
+- `EC2_SSH_PRIVATE_KEY`
 
 ---
 

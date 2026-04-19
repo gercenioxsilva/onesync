@@ -1,0 +1,142 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-${{ github.ref_name }}
+      cancel-in-progress: true
+
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+      FRONTEND_BUCKET: ${{ secrets.FRONTEND_BUCKET }}
+      CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+      FRONTEND_API_URL: ${{ secrets.FRONTEND_API_URL }}
+      DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+      EC2_SSH_HOST: ${{ secrets.EC2_SSH_HOST }}
+      EC2_SSH_USER: ${{ secrets.EC2_SSH_USER }}
+      AWS_SECRETSMANAGER_SECRET_ID: ${{ secrets.AWS_SECRETSMANAGER_SECRET_ID }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: backend
+          file: backend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.ECR_REGISTRY }}:latest
+            ${{ env.ECR_REGISTRY }}:${{ github.sha }}
+
+      - name: Install Node.js for frontend
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install frontend dependencies
+        run: npm install
+        working-directory: frontend
+
+      - name: Build frontend
+        run: |
+          npm run build
+        working-directory: frontend
+        env:
+          VITE_API_URL: ${{ env.FRONTEND_API_URL }}
+
+      - name: Deploy frontend build to S3
+        run: |
+          aws s3 sync frontend/dist s3://${{ env.FRONTEND_BUCKET }} --delete
+        env:
+          AWS_REGION: ${{ env.AWS_REGION }}
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} --paths '/*'
+        env:
+          AWS_REGION: ${{ env.AWS_REGION }}
+
+      - name: Restart backend on EC2 (optional)
+        if: ${{ secrets.EC2_SSH_HOST != '' && secrets.EC2_SSH_PRIVATE_KEY != '' && secrets.AWS_SECRETSMANAGER_SECRET_ID != '' }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "${{ secrets.EC2_SSH_HOST }}" >> ~/.ssh/known_hosts
+
+          SSH_USER="${{ secrets.EC2_SSH_USER }}"
+          if [ -z "$SSH_USER" ]; then
+            SSH_USER="ec2-user"
+          fi
+
+          ssh -i ~/.ssh/id_rsa "$SSH_USER@${{ secrets.EC2_SSH_HOST }}" <<EOF
+            set -euo pipefail
+
+            AWS_REGION="${AWS_REGION}"
+            ECR_REGISTRY="${ECR_REGISTRY}"
+            DOMAIN_NAME="${DOMAIN_NAME}"
+            SECRET_ID="${{ secrets.AWS_SECRETSMANAGER_SECRET_ID }}"
+
+            echo "Fetching secrets from Secrets Manager..."
+            SECRETS=$(aws secretsmanager get-secret-value --secret-id "$SECRET_ID" --region "$AWS_REGION" --query SecretString --output text)
+            DATABASE_URL=$(echo "$SECRETS" | jq -r '.DATABASE_URL')
+            AUTH_SECRET_KEY=$(echo "$SECRETS" | jq -r '.AUTH_SECRET_KEY')
+            BOOTSTRAP_EMAIL=$(echo "$SECRETS" | jq -r '.BOOTSTRAP_OWNER_EMAIL')
+            BOOTSTRAP_PASSWORD=$(echo "$SECRETS" | jq -r '.BOOTSTRAP_OWNER_PASSWORD')
+            GOOGLE_CLIENT_ID=$(echo "$SECRETS" | jq -r '.GOOGLE_CLIENT_ID')
+
+            AWS_ACCOUNT=$(echo "$ECR_REGISTRY" | cut -d'/' -f1)
+            aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com"
+            docker pull "$ECR_REGISTRY:latest"
+            docker rm -f onesync-backend || true
+            docker run -d \
+              --name onesync-backend \
+              --restart unless-stopped \
+              -p 8000:8000 \
+              --log-driver awslogs \
+              --log-opt awslogs-region="$AWS_REGION" \
+              --log-opt awslogs-group=onesync-backend \
+              --log-opt awslogs-stream=ec2-backend \
+              -e DATABASE_URL="$DATABASE_URL" \
+              -e ENVIRONMENT=production \
+              -e CORS_ORIGINS='["https://$DOMAIN_NAME","https://www.$DOMAIN_NAME"]' \
+              -e AUTH_SECRET_KEY="$AUTH_SECRET_KEY" \
+              -e AUTH_BOOTSTRAP_ENABLED=true \
+              -e AUTH_BOOTSTRAP_OWNER_EMAIL="$BOOTSTRAP_EMAIL" \
+              -e AUTH_BOOTSTRAP_OWNER_PASSWORD="$BOOTSTRAP_PASSWORD" \
+              -e AUTH_BOOTSTRAP_PLAN=FREE \
+              -e AUTH_BOOTSTRAP_IMPORT_COLLABORATORS=false \
+              -e ENABLE_SCHEMA_AUTOCREATE=false \
+              -e GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" \
+              "$ECR_REGISTRY:latest"
+          EOF
