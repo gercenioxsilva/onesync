@@ -114,13 +114,16 @@ function KeyResultRow({ kr, onProgressChange, onDelete, writeable }) {
 
   return (
     <Box sx={{ py: 1.5, px: 2, bgcolor: '#f8fafc', borderRadius: 1, border: '1px solid #e2e8f0' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}
+      >
         <Box sx={{ flexGrow: 1 }}>
           <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.25 }}>
             {kr.title}
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            {kr.initial_value} → {kr.target_value} {kr.unit} · {METRIC_TYPES.find((m) => m.value === kr.metric_type)?.label || kr.metric_type}
+            {kr.initial_value} → {kr.target_value} {kr.unit} ·{' '}
+            {METRIC_TYPES.find((m) => m.value === kr.metric_type)?.label || kr.metric_type}
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -170,7 +173,10 @@ function ObjectiveCard({ objective, onRefresh, writeable }) {
   const [savingKr, setSavingKr] = useState(false)
 
   const handleAddKr = async () => {
-    if (!krForm.title.trim()) { setKrError('Título obrigatório'); return }
+    if (!krForm.title.trim()) {
+      setKrError('Título obrigatório')
+      return
+    }
     if (Number(krForm.target_value) === Number(krForm.initial_value)) {
       setKrError('Valor alvo deve ser diferente do valor inicial')
       return
@@ -221,7 +227,14 @@ function ObjectiveCard({ objective, onRefresh, writeable }) {
         }}
         onClick={() => setExpanded((v) => !v)}
       >
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            mb: 1.5,
+          }}
+        >
           <Box sx={{ flexGrow: 1, pr: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
@@ -246,7 +259,10 @@ function ObjectiveCard({ objective, onRefresh, writeable }) {
                   size="small"
                   color="error"
                   onPointerDown={(e) => e.stopPropagation()}
-                  onClick={(e) => { e.stopPropagation(); handleDeleteObjective() }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleDeleteObjective()
+                  }}
                 >
                   ✕
                 </IconButton>
@@ -262,7 +278,11 @@ function ObjectiveCard({ objective, onRefresh, writeable }) {
         <Box sx={{ p: 2.5, bgcolor: '#fafafa' }}>
           <Stack spacing={1.5}>
             {objective.key_results.length === 0 && (
-              <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 1 }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ textAlign: 'center', py: 1 }}
+              >
                 Nenhum Key Result cadastrado ainda.
               </Typography>
             )}
@@ -279,7 +299,10 @@ function ObjectiveCard({ objective, onRefresh, writeable }) {
               <Button
                 variant="outlined"
                 size="small"
-                onClick={(e) => { e.stopPropagation(); setAddKrOpen(true) }}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setAddKrOpen(true)
+                }}
                 sx={{ alignSelf: 'flex-start', mt: 0.5 }}
               >
                 + Key Result
@@ -308,7 +331,9 @@ function ObjectiveCard({ objective, onRefresh, writeable }) {
                 onChange={(e) => setKrForm((f) => ({ ...f, metric_type: e.target.value }))}
               >
                 {METRIC_TYPES.map((m) => (
-                  <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>
+                  <MenuItem key={m.value} value={m.value}>
+                    {m.label}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -345,7 +370,9 @@ function ObjectiveCard({ objective, onRefresh, writeable }) {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setAddKrOpen(false)} disabled={savingKr}>Cancelar</Button>
+          <Button onClick={() => setAddKrOpen(false)} disabled={savingKr}>
+            Cancelar
+          </Button>
           <Button onClick={handleAddKr} variant="contained" disabled={savingKr}>
             {savingKr ? 'Salvando...' : 'Adicionar KR'}
           </Button>
@@ -375,10 +402,15 @@ export default function OKRsPage() {
       .finally(() => setLoading(false))
   }
 
-  useEffect(() => { load() }, [cycle]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    load()
+  }, [cycle]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSave = async () => {
-    if (!form.title.trim()) { setFormError('Título obrigatório'); return }
+    if (!form.title.trim()) {
+      setFormError('Título obrigatório')
+      return
+    }
     setSaving(true)
     try {
       await okrsAPI.create({
@@ -407,7 +439,9 @@ export default function OKRsPage() {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3, gap: 2, flexWrap: 'wrap' }}>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'space-between', mb: 3, gap: 2, flexWrap: 'wrap' }}
+      >
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
             OKRs
@@ -421,7 +455,11 @@ export default function OKRsPage() {
             <InputLabel>Ciclo</InputLabel>
             <Select value={cycle} label="Ciclo" onChange={(e) => setCycle(e.target.value)}>
               <MenuItem value="">Todos</MenuItem>
-              {CYCLES.map((c) => <MenuItem key={c} value={c}>{c}</MenuItem>)}
+              {CYCLES.map((c) => (
+                <MenuItem key={c} value={c}>
+                  {c}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
           {writeable && (
@@ -440,15 +478,20 @@ export default function OKRsPage() {
           { label: 'Progresso médio', value: `${avgProgress}%` },
         ].map((s) => (
           <Paper key={s.label} sx={{ p: 2, borderRadius: 2, textAlign: 'center' }} elevation={0}>
-            <Typography variant="h5" sx={{ fontWeight: 800 }}>{s.value}</Typography>
-            <Typography variant="body2" color="text.secondary">{s.label}</Typography>
+            <Typography variant="h5" sx={{ fontWeight: 800 }}>
+              {s.value}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {s.label}
+            </Typography>
           </Paper>
         ))}
       </Box>
 
       {atRisk > 0 && (
         <Alert severity="warning" sx={{ mb: 2 }}>
-          {atRisk} objetivo{atRisk > 1 ? 's' : ''} em risco ou atrasado{atRisk > 1 ? 's' : ''} — revise os Key Results.
+          {atRisk} objetivo{atRisk > 1 ? 's' : ''} em risco ou atrasado{atRisk > 1 ? 's' : ''} —
+          revise os Key Results.
         </Alert>
       )}
 
@@ -466,12 +509,7 @@ export default function OKRsPage() {
       ) : (
         <Stack spacing={2}>
           {objectives.map((obj) => (
-            <ObjectiveCard
-              key={obj.id}
-              objective={obj}
-              onRefresh={load}
-              writeable={writeable}
-            />
+            <ObjectiveCard key={obj.id} objective={obj} onRefresh={load} writeable={writeable} />
           ))}
         </Stack>
       )}
@@ -503,14 +541,20 @@ export default function OKRsPage() {
                 label="Ciclo"
                 onChange={(e) => setForm((f) => ({ ...f, cycle: e.target.value }))}
               >
-                {CYCLES.map((c) => <MenuItem key={c} value={c}>{c}</MenuItem>)}
+                {CYCLES.map((c) => (
+                  <MenuItem key={c} value={c}>
+                    {c}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
             {formError && <Alert severity="error">{formError}</Alert>}
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)} disabled={saving}>Cancelar</Button>
+          <Button onClick={() => setDialogOpen(false)} disabled={saving}>
+            Cancelar
+          </Button>
           <Button onClick={handleSave} variant="contained" disabled={saving}>
             {saving ? 'Criando...' : 'Criar objetivo'}
           </Button>

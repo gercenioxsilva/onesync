@@ -11,8 +11,6 @@ from app.core.database import Base, SessionLocal, engine
 from app.core.tasks import start_scheduler, stop_scheduler
 from app.slices.actions.api.router import router as actions_router
 from app.slices.actions.infrastructure import models as _action_models  # noqa: F401
-from app.slices.okrs.api.router import router as okrs_router
-from app.slices.okrs.infrastructure import models as _okr_models  # noqa: F401
 from app.slices.ai.api.router import router as ai_router
 from app.slices.ai.infrastructure import models as _ai_models  # noqa: F401
 from app.slices.auth.api.router import router as auth_router
@@ -20,6 +18,8 @@ from app.slices.collaborators.api.router import router as collaborators_router
 from app.slices.collaborators.application.services import CollaboratorService
 from app.slices.collaborators.infrastructure import models as _collaborator_models  # noqa: F401
 from app.slices.collaborators.infrastructure.models import CollaboratorModel
+from app.slices.okrs.api.router import router as okrs_router
+from app.slices.okrs.infrastructure import models as _okr_models  # noqa: F401
 from app.slices.one_on_ones.api.router import router as one_on_ones_router
 from app.slices.one_on_ones.infrastructure import models as _one_on_one_models  # noqa: F401
 from app.slices.pdis.api.router import router as pdis_router
