@@ -65,15 +65,13 @@ jobs:
           FRONTEND_BUCKET="${FRONTEND_BUCKET_ARN#arn:aws:s3:::}"
           none "$FRONTEND_BUCKET" && fail "S3 bucket com tag Name=${PREFIX}-frontend não encontrado."
 
-          # CloudFront — identifica pela tag Name={prefix}-cdn
-          CF_ARN=$(aws resourcegroupstaggingapi get-resources \
-            --tag-filters "Key=Name,Values=${PREFIX}-cdn" \
-            --resource-type-filters "cloudfront:distribution" \
-            --query 'ResourceTagMappingList[0].ResourceARN' \
+          # CloudFront — a tagging API é instável para serviços globais; busca pela
+          # origem S3 (FRONTEND_BUCKET já foi resolvido acima)
+          CLOUDFRONT_ID=$(aws cloudfront list-distributions \
+            --query "DistributionList.Items[?contains(Origins.Items[0].DomainName,'${FRONTEND_BUCKET}')].Id | [0]" \
             --output text) \
-            || fail "Erro ao buscar CloudFront com tag Name=${PREFIX}-cdn."
-          CLOUDFRONT_ID="${CF_ARN##*/}"
-          none "$CLOUDFRONT_ID" && fail "CloudFront com tag Name=${PREFIX}-cdn não encontrado."
+            || fail "Erro ao listar CloudFront distributions."
+          none "$CLOUDFRONT_ID" && fail "CloudFront com origem S3 '${FRONTEND_BUCKET}' não encontrado. Verifique se o terraform apply foi concluído."
 
           # Domain — lê dos aliases da distribuição CloudFront
           DOMAIN_NAME=$(aws cloudfront get-distribution \
