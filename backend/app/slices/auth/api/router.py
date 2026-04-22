@@ -93,9 +93,7 @@ def login_google(payload: GoogleLoginRequest, db: Session = Depends(get_db)):
             db.commit()
             db.refresh(user)
     else:
-        user = db.scalar(
-            select(UserModel).where(UserModel.google_sub == google_sub)
-        )
+        user = db.scalar(select(UserModel).where(UserModel.google_sub == google_sub))
         if not user:
             user = db.scalar(
                 select(UserModel).where(
