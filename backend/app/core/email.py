@@ -2,6 +2,8 @@ import logging
 import threading
 from datetime import date
 
+import boto3
+
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -13,9 +15,6 @@ def _send_via_ses(to_address: str, subject: str, html_body: str, text_body: str)
     if not to_address:
         return
     try:
-        import boto3
-        from botocore.exceptions import ClientError
-
         client = boto3.client("ses", region_name=settings.ses_region)
         client.send_email(
             Source=settings.ses_from_email,
