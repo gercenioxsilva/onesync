@@ -43,7 +43,24 @@ jobs:
         id: config
         run: |
           p="/${PROJECT}/${ENVIRONMENT}"
-          get() { aws ssm get-parameter --name "${p}/${1}" --query 'Parameter.Value' --output text; }
+
+          # Falha explicitamente se o parâmetro não existir.
+          # Causa comum: 'terraform apply' ainda não foi executado com os
+          # novos recursos aws_ssm_parameter definidos em outputs.tf.
+          get() {
+            local name="${p}/${1}"
+            local val
+            if ! val=$(aws ssm get-parameter --name "$name" --query 'Parameter.Value' --output text 2>&1); then
+              echo "::error::SSM parameter '$name' não encontrado. Execute 'terraform apply' primeiro." >&2
+              exit 1
+            fi
+            if [ -z "$val" ]; then
+              echo "::error::SSM parameter '$name' está vazio." >&2
+              exit 1
+            fi
+            echo "$val"
+          }
+
           {
             echo "ecr_registry=$(get ecr_registry)"
             echo "frontend_bucket=$(get frontend_bucket)"
