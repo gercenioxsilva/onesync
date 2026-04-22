@@ -13,6 +13,7 @@ import CollaboratorDetailPage from './pages/CollaboratorDetailPage'
 import OneOnOnesPage from './pages/OneOnOnesPage'
 import PdiPage from './pages/PdiPage'
 import ActionsPage from './pages/ActionsPage'
+import OKRsPage from './pages/OKRsPage'
 import ReportsPage from './pages/ReportsPage'
 import SettingsPage from './pages/SettingsPage'
 
@@ -84,6 +85,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <Route path="/one-on-ones" element={<OneOnOnesPage />} />
               <Route path="/pdis" element={<PdiPage />} />
               <Route path="/actions" element={<ActionsPage />} />
+              <Route path="/okrs" element={<OKRsPage />} />
               <Route path="/reports" element={<ReportsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Route>

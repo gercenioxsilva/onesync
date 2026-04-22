@@ -11,6 +11,8 @@ from app.core.database import Base, SessionLocal, engine
 from app.core.tasks import start_scheduler, stop_scheduler
 from app.slices.actions.api.router import router as actions_router
 from app.slices.actions.infrastructure import models as _action_models  # noqa: F401
+from app.slices.okrs.api.router import router as okrs_router
+from app.slices.okrs.infrastructure import models as _okr_models  # noqa: F401
 from app.slices.ai.api.router import router as ai_router
 from app.slices.ai.infrastructure import models as _ai_models  # noqa: F401
 from app.slices.auth.api.router import router as auth_router
@@ -141,3 +143,4 @@ app.include_router(reporting_router, dependencies=[Depends(get_current_user)])
 app.include_router(users_router, dependencies=[Depends(get_current_user)])
 app.include_router(tenants_router, dependencies=[Depends(get_current_user)])
 app.include_router(actions_router, dependencies=[Depends(get_current_user)])
+app.include_router(okrs_router, dependencies=[Depends(get_current_user)])

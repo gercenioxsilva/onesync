@@ -23,6 +23,7 @@ const sections = [
   { label: '1:1', path: '/one-on-ones' },
   { label: 'PDI', path: '/pdis' },
   { label: 'Ações', path: '/actions' },
+  { label: 'OKRs', path: '/okrs' },
   { label: 'Relatórios', path: '/reports' },
   { label: 'Configurações', path: '/settings' },
 ]

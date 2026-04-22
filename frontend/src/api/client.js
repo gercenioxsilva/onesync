@@ -210,6 +210,19 @@ export const tenantsAPI = {
   update: (data) => api.patch('/tenants/me', data),
 }
 
+export const okrsAPI = {
+  list: (cycle) => api.get('/okrs/objectives', { params: cycle ? { cycle } : {} }),
+  create: (data) => api.post('/okrs/objectives', data),
+  update: (id, data) => api.put(`/okrs/objectives/${id}`, data),
+  deleteObjective: (id) => api.delete(`/okrs/objectives/${id}`),
+  addKeyResult: (objectiveId, data) =>
+    api.post(`/okrs/objectives/${objectiveId}/key-results`, data),
+  updateKeyResult: (krId, data) => api.put(`/okrs/key-results/${krId}`, data),
+  updateKrProgress: (krId, currentValue) =>
+    api.patch(`/okrs/key-results/${krId}/progress`, { current_value: currentValue }),
+  deleteKeyResult: (krId) => api.delete(`/okrs/key-results/${krId}`),
+}
+
 export const aiAPI = {
   getConfig: () => api.get('/ai/config'),
   createConfig: (data) => api.post('/ai/config', data),
