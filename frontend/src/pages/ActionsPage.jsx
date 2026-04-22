@@ -90,10 +90,8 @@ function ActionCard({ item, onDelete, onMove: _onMove }) {
         <Button
           size="small"
           color="error"
-          onClick={(e) => {
-            e.stopPropagation()
-            onDelete(item.id)
-          }}
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={() => onDelete(item.id)}
         >
           Excluir
         </Button>
