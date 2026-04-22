@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
@@ -64,35 +65,39 @@ const theme = createTheme({
   },
 })
 
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/auth" element={<AuthPage />} />
-            <Route
-              element={
-                <ProtectedRoute>
-                  <Layout />
-                </ProtectedRoute>
-              }
-            >
-              <Route path="/" element={<DashboardPage />} />
-              <Route path="/collaborators" element={<CollaboratorsPage />} />
-              <Route path="/collaborators/:id" element={<CollaboratorDetailPage />} />
-              <Route path="/one-on-ones" element={<OneOnOnesPage />} />
-              <Route path="/pdis" element={<PdiPage />} />
-              <Route path="/actions" element={<ActionsPage />} />
-              <Route path="/okrs" element={<OKRsPage />} />
-              <Route path="/reports" element={<ReportsPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-            </Route>
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
-    </ThemeProvider>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/auth" element={<AuthPage />} />
+              <Route
+                element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route path="/" element={<DashboardPage />} />
+                <Route path="/collaborators" element={<CollaboratorsPage />} />
+                <Route path="/collaborators/:id" element={<CollaboratorDetailPage />} />
+                <Route path="/one-on-ones" element={<OneOnOnesPage />} />
+                <Route path="/pdis" element={<PdiPage />} />
+                <Route path="/actions" element={<ActionsPage />} />
+                <Route path="/okrs" element={<OKRsPage />} />
+                <Route path="/reports" element={<ReportsPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+              </Route>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
+      </ThemeProvider>
+    </GoogleOAuthProvider>
   </React.StrictMode>
 )

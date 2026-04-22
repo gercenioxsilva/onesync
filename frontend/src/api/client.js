@@ -84,10 +84,9 @@ export const authAPI = {
     return response.data
   },
   loginGoogle: async (idToken, tenantCnpj) => {
-    const response = await axios.post(`${API_URL}/auth/google`, {
-      id_token: idToken,
-      tenant_cnpj: tenantCnpj,
-    })
+    const body = { id_token: idToken }
+    if (tenantCnpj) body.tenant_cnpj = tenantCnpj
+    const response = await axios.post(`${API_URL}/auth/google`, body)
     const token = response.data?.access_token
     setStoredToken(token)
     setStoredSession(response.data)

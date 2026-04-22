@@ -52,17 +52,6 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 
 @router.post("/google", response_model=LoginResponse)
 def login_google(payload: GoogleLoginRequest, db: Session = Depends(get_db)):
-    tenant = db.scalar(
-        select(TenantModel).where(
-            (TenantModel.cnpj == payload.tenant_cnpj) & (TenantModel.is_active.is_(True))
-        )
-    )
-    if not tenant:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Tenant não encontrado",
-        )
-
     google_payload = verify_google_id_token(payload.id_token)
     email = str(google_payload.get("email", "")).strip().lower()
     google_sub = str(google_payload.get("sub", "")).strip()
@@ -74,41 +63,68 @@ def login_google(payload: GoogleLoginRequest, db: Session = Depends(get_db)):
             detail="Token do Google sem dados mínimos",
         )
 
-    user = db.scalar(
-        select(UserModel).where(
-            (UserModel.tenant_id == tenant.id)
-            & ((UserModel.google_sub == google_sub) | (UserModel.email == email))
+    if payload.tenant_cnpj:
+        tenant = db.scalar(
+            select(TenantModel).where(
+                (TenantModel.cnpj == payload.tenant_cnpj) & (TenantModel.is_active.is_(True))
+            )
         )
-    )
-    if not user:
-        user = UserModel(
-            tenant_id=tenant.id,
-            full_name=name,
-            email=email,
-            google_sub=google_sub,
-            role="MEMBER",
-            password_hash="",
+        if not tenant:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail={"code": "tenant_not_found", "email": email, "name": name},
+            )
+        user = db.scalar(
+            select(UserModel).where(
+                (UserModel.tenant_id == tenant.id)
+                & ((UserModel.google_sub == google_sub) | (UserModel.email == email))
+            )
         )
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-    elif not user.is_active:
+        if not user:
+            user = UserModel(
+                tenant_id=tenant.id,
+                full_name=name,
+                email=email,
+                google_sub=google_sub,
+                role="MEMBER",
+                password_hash="",
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+    else:
+        user = db.scalar(
+            select(UserModel).where(UserModel.google_sub == google_sub)
+        )
+        if not user:
+            user = db.scalar(
+                select(UserModel).where(
+                    (UserModel.email == email) & (UserModel.is_active.is_(True))
+                )
+            )
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail={"code": "tenant_not_found", "email": email, "name": name},
+            )
+
+    if not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Usuário desativado",
         )
-    else:
-        changed = False
-        if user.google_sub != google_sub:
-            user.google_sub = google_sub
-            changed = True
-        if user.full_name != name:
-            user.full_name = name
-            changed = True
-        if changed:
-            db.add(user)
-            db.commit()
-            db.refresh(user)
+
+    changed = False
+    if user.google_sub != google_sub:
+        user.google_sub = google_sub
+        changed = True
+    if user.full_name != name:
+        user.full_name = name
+        changed = True
+    if changed:
+        db.add(user)
+        db.commit()
+        db.refresh(user)
 
     token = create_access_token(user.id, user.tenant_id, user.role, user.email)
     return LoginResponse(

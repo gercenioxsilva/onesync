@@ -21,6 +21,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
+import { GoogleLogin } from '@react-oauth/google'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthProvider'
 import oneSyncLogo from '../assets/onesync-logo-orbit.svg'
@@ -92,8 +93,6 @@ Para dúvidas sobre estes termos, entre em contato pelo repositório oficial do 
 const initialLogin = {
   email: 'admin@people.local',
   password: 'admin123',
-  tenantCnpj: '00000000000191',
-  googleIdToken: '',
 }
 
 const initialTenant = {
@@ -145,17 +144,32 @@ export default function AuthPage() {
     }
   }
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleSuccess = async (credentialResponse) => {
     setLoading(true)
     setFeedback(null)
     try {
-      await loginGoogle(loginForm.googleIdToken, loginForm.tenantCnpj)
+      await loginGoogle(credentialResponse.credential)
       finishLogin()
     } catch (error) {
-      setFeedback({
-        severity: 'error',
-        message: error?.response?.data?.detail || 'Falha no login com Google.',
-      })
+      const detail = error?.response?.data?.detail
+      if (error?.response?.status === 404 && detail?.code === 'tenant_not_found') {
+        setTab(1)
+        setTermsAccepted(false)
+        setTenantForm((current) => ({
+          ...current,
+          owner_email: detail.email || '',
+          owner_name: detail.name || '',
+        }))
+        setFeedback({
+          severity: 'info',
+          message: `Conta Google identificada (${detail.email}). Complete o cadastro da sua empresa para acessar o OneSync.`,
+        })
+      } else {
+        setFeedback({
+          severity: 'error',
+          message: typeof detail === 'string' ? detail : 'Falha no login com Google.',
+        })
+      }
     } finally {
       setLoading(false)
     }
@@ -177,7 +191,6 @@ export default function AuthPage() {
       setLoginForm((current) => ({
         ...current,
         email: tenantForm.owner_email,
-        tenantCnpj: tenantForm.cnpj,
         password: tenantForm.owner_password,
       }))
     } catch (error) {
@@ -339,35 +352,24 @@ export default function AuthPage() {
                     {loading ? 'Entrando...' : 'Entrar com email e senha'}
                   </Button>
 
-                  <Divider>Google SSO</Divider>
+                  <Divider>ou continue com</Divider>
 
-                  <TextField
-                    label="CNPJ do tenant"
-                    value={loginForm.tenantCnpj}
-                    onChange={(e) =>
-                      setLoginForm((current) => ({ ...current, tenantCnpj: e.target.value }))
-                    }
-                    fullWidth
-                  />
-                  <TextField
-                    label="Google ID Token"
-                    value={loginForm.googleIdToken}
-                    onChange={(e) =>
-                      setLoginForm((current) => ({ ...current, googleIdToken: e.target.value }))
-                    }
-                    multiline
-                    rows={3}
-                    fullWidth
-                    helperText="Integração inicial: cole aqui o ID token do Google até adicionarmos o botão OAuth completo."
-                  />
-                  <Button
-                    variant="outlined"
-                    size="large"
-                    onClick={handleGoogleLogin}
-                    disabled={loading || !loginForm.googleIdToken || !loginForm.tenantCnpj}
-                  >
-                    {loading ? 'Validando...' : 'Entrar com Google'}
-                  </Button>
+                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    <GoogleLogin
+                      onSuccess={handleGoogleSuccess}
+                      onError={() =>
+                        setFeedback({
+                          severity: 'error',
+                          message: 'Falha ao autenticar com Google.',
+                        })
+                      }
+                      theme="outline"
+                      size="large"
+                      text="signin_with"
+                      locale="pt-BR"
+                      width="320"
+                    />
+                  </Box>
                 </Stack>
               ) : (
                 <Stack spacing={2}>
