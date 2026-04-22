@@ -3,8 +3,16 @@ import {
   Alert,
   Box,
   Button,
+  Checkbox,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
+  FormControlLabel,
+  IconButton,
+  Link,
   MenuItem,
   Paper,
   Stack,
@@ -16,6 +24,70 @@ import {
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthProvider'
 import oneSyncLogo from '../assets/onesync-logo-orbit.svg'
+
+const TERMS_CONTENT = `TERMOS DE USO — ONESYNC
+Versão 1.0 · Licença MIT (Open Source)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. ACEITAÇÃO DOS TERMOS
+
+Ao criar uma conta ou utilizar a plataforma OneSync, você concorda com estes Termos de Uso. Se você não concordar, não utilize o serviço.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+2. LICENÇA DO SOFTWARE (MIT)
+
+Copyright (c) 2024 OneSync Contributors
+
+É concedida, gratuitamente, a qualquer pessoa que obtenha uma cópia deste software e dos arquivos de documentação associados (o "Software"), permissão para negociar o Software sem restrições, incluindo, sem limitação, os direitos de usar, copiar, modificar, mesclar, publicar, distribuir, sublicenciar e/ou vender cópias do Software, e para permitir que as pessoas a quem o Software é fornecido o façam, sujeito às seguintes condições:
+
+O aviso de copyright acima e este aviso de permissão devem ser incluídos em todas as cópias ou partes substanciais do Software.
+
+O SOFTWARE É FORNECIDO "COMO ESTÁ", SEM GARANTIA DE QUALQUER TIPO, EXPRESSA OU IMPLÍCITA, INCLUINDO, MAS NÃO SE LIMITANDO ÀS GARANTIAS DE COMERCIABILIDADE, ADEQUAÇÃO A UM DETERMINADO FIM E NÃO VIOLAÇÃO. EM NENHUM CASO OS AUTORES OU TITULARES DOS DIREITOS AUTORAIS SERÃO RESPONSÁVEIS POR QUALQUER RECLAMAÇÃO, DANOS OU OUTRA RESPONSABILIDADE, SEJA EM UMA AÇÃO DE CONTRATO, ATO ILÍCITO OU DE OUTRA FORMA, DECORRENTE DE, FORA DE OU EM CONEXÃO COM O SOFTWARE OU O USO OU OUTRAS NEGOCIAÇÕES NO SOFTWARE.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3. USO DA PLATAFORMA
+
+3.1 Você é responsável por manter a confidencialidade das suas credenciais de acesso.
+
+3.2 É proibido utilizar a plataforma para fins ilegais, fraudulentos ou que violem direitos de terceiros.
+
+3.3 Você concorda em fornecer informações verdadeiras no cadastro da empresa.
+
+3.4 O uso indevido pode resultar na suspensão ou encerramento da conta.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+4. DADOS E PRIVACIDADE
+
+4.1 Os dados inseridos na plataforma são de sua responsabilidade e propriedade.
+
+4.2 A OneSync não comercializa dados pessoais de usuários.
+
+4.3 Dados podem ser processados por serviços de infraestrutura terceiros (AWS) em conformidade com a LGPD e GDPR.
+
+4.4 Backups e disponibilidade são realizados com base nas melhores práticas, mas não há garantia de SLA no plano gratuito.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+5. DISPONIBILIDADE
+
+O serviço é disponibilizado "no estado em que se encontra". A OneSync não garante disponibilidade ininterrupta e pode realizar manutenções sem aviso prévio.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+6. MODIFICAÇÕES
+
+Estes Termos podem ser atualizados a qualquer momento. O uso continuado da plataforma após alterações constitui aceite dos novos termos.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+7. CONTATO
+
+Para dúvidas sobre estes termos, entre em contato pelo repositório oficial do projeto em github.com/onesync.
+`
 
 const initialLogin = {
   email: 'admin@people.local',
@@ -46,6 +118,8 @@ export default function AuthPage() {
   const [tenantForm, setTenantForm] = useState(initialTenant)
   const [feedback, setFeedback] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [termsAccepted, setTermsAccepted] = useState(false)
+  const [termsOpen, setTermsOpen] = useState(false)
 
   if (isAuthenticated) {
     return <Navigate to={location.state?.from?.pathname || '/'} replace />
@@ -223,7 +297,14 @@ export default function AuthPage() {
                 </Typography>
               </Box>
 
-              <Tabs value={tab} onChange={(_, value) => setTab(value)}>
+              <Tabs
+                value={tab}
+                onChange={(_, value) => {
+                  setTab(value)
+                  setFeedback(null)
+                  if (value === 0) setTermsAccepted(false)
+                }}
+              >
                 <Tab label="Entrar" />
                 <Tab label="Cadastrar empresa" />
               </Tabs>
@@ -380,14 +461,86 @@ export default function AuthPage() {
                     }
                     fullWidth
                   />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={termsAccepted}
+                        onChange={(e) => setTermsAccepted(e.target.checked)}
+                        size="small"
+                      />
+                    }
+                    label={
+                      <Typography variant="body2">
+                        Li e aceito os{' '}
+                        <Link
+                          component="button"
+                          type="button"
+                          variant="body2"
+                          onClick={() => setTermsOpen(true)}
+                          sx={{ fontWeight: 600 }}
+                        >
+                          Termos de Uso
+                        </Link>{' '}
+                        (licença MIT · software livre)
+                      </Typography>
+                    }
+                  />
                   <Button
                     variant="contained"
                     size="large"
                     onClick={handleRegisterTenant}
-                    disabled={loading}
+                    disabled={loading || !termsAccepted}
                   >
                     {loading ? 'Criando tenant...' : 'Criar empresa'}
                   </Button>
+
+                  <Dialog
+                    open={termsOpen}
+                    onClose={() => setTermsOpen(false)}
+                    maxWidth="md"
+                    fullWidth
+                    scroll="paper"
+                  >
+                    <DialogTitle sx={{ fontWeight: 700, pr: 6 }}>
+                      Termos de Uso — OneSync
+                      <IconButton
+                        onClick={() => setTermsOpen(false)}
+                        size="small"
+                        sx={{ position: 'absolute', right: 12, top: 12 }}
+                        aria-label="fechar"
+                      >
+                        ✕
+                      </IconButton>
+                    </DialogTitle>
+                    <DialogContent dividers>
+                      <Typography
+                        component="pre"
+                        variant="body2"
+                        sx={{
+                          whiteSpace: 'pre-wrap',
+                          fontFamily: 'inherit',
+                          lineHeight: 1.75,
+                          color: 'text.secondary',
+                        }}
+                      >
+                        {TERMS_CONTENT}
+                      </Typography>
+                    </DialogContent>
+                    <DialogActions sx={{ px: 3, py: 2, gap: 1 }}>
+                      <Button onClick={() => setTermsOpen(false)} color="inherit">
+                        Fechar
+                      </Button>
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          setTermsAccepted(true)
+                          setTermsOpen(false)
+                        }}
+                      >
+                        Li e aceito os termos
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
                 </Stack>
               )}
             </Stack>
