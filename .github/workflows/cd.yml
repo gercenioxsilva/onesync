@@ -214,7 +214,7 @@ jobs:
             -e AUTH_BOOTSTRAP_OWNER_PASSWORD="$BOOTSTRAP_PASSWORD" \
             -e AUTH_BOOTSTRAP_PLAN=FREE \
             -e AUTH_BOOTSTRAP_IMPORT_COLLABORATORS=false \
-            -e ENABLE_SCHEMA_AUTOCREATE=false \
+            -e ENABLE_SCHEMA_AUTOCREATE=true \
             -e GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" \
             "$ECR_REGISTRY:latest"
 
