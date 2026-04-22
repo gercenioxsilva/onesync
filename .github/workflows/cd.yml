@@ -51,7 +51,7 @@ jobs:
           # ECR — nome determinístico: {prefix}-backend
           ECR_REGISTRY=$(aws ecr describe-repositories \
             --repository-names "${PREFIX}-backend" \
-            --query 'repositories[0].repositoryUrl' \
+            --query 'repositories[0].repositoryUri' \
             --output text) \
             || fail "ECR '${PREFIX}-backend' não encontrado."
 
