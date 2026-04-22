@@ -37,34 +37,69 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # Todos os valores de infra são lidos do SSM Parameter Store,
-      # populado pelo Terraform no terraform apply. Zero secrets extras.
-      #
-      # IMPORTANTE: VAR=$(cmd) é checado pelo set -e (falha o step se cmd falhar).
-      # echo "VAR=$(cmd)" NÃO é checado — set -e avalia o exit code do echo (sempre 0).
-      # Por isso cada parâmetro é atribuído numa linha separada antes do echo.
-      - name: Discover infrastructure config from SSM
+      # Descobre os valores de infra consultando os recursos AWS diretamente
+      # pelas tags e nomes definidos pelo Terraform. Não depende de SSM Parameters
+      # nem de nenhum terraform apply adicional — funciona com a infra já existente.
+      - name: Discover infrastructure config from AWS
         id: config
         run: |
-          p="/${PROJECT}/${ENVIRONMENT}"
+          PREFIX="${PROJECT}-${ENVIRONMENT}"
 
-          ECR_REGISTRY=$(aws ssm get-parameter --name "$p/ecr_registry"                --query 'Parameter.Value' --output text) \
-            || { echo "::error::Parâmetro SSM '$p/ecr_registry' não encontrado — execute 'terraform apply' primeiro."; exit 1; }
+          fail() { echo "::error::$1"; exit 1; }
+          none() { [ -z "$1" ] || [ "$1" = "None" ]; }
 
-          FRONTEND_BUCKET=$(aws ssm get-parameter --name "$p/frontend_bucket"          --query 'Parameter.Value' --output text) \
-            || { echo "::error::Parâmetro SSM '$p/frontend_bucket' não encontrado — execute 'terraform apply' primeiro."; exit 1; }
+          # ECR — nome determinístico: {prefix}-backend
+          ECR_REGISTRY=$(aws ecr describe-repositories \
+            --repository-names "${PREFIX}-backend" \
+            --query 'repositories[0].repositoryUrl' \
+            --output text) \
+            || fail "ECR '${PREFIX}-backend' não encontrado."
 
-          CLOUDFRONT_ID=$(aws ssm get-parameter --name "$p/cloudfront_distribution_id" --query 'Parameter.Value' --output text) \
-            || { echo "::error::Parâmetro SSM '$p/cloudfront_distribution_id' não encontrado — execute 'terraform apply' primeiro."; exit 1; }
+          # S3 — tem sufixo aleatório, identifica pela tag Name={prefix}-frontend
+          FRONTEND_BUCKET_ARN=$(aws resourcegroupstaggingapi get-resources \
+            --tag-filters "Key=Name,Values=${PREFIX}-frontend" \
+            --resource-type-filters "s3:bucket" \
+            --query 'ResourceTagMappingList[0].ResourceARN' \
+            --output text) \
+            || fail "Erro ao buscar S3 bucket com tag Name=${PREFIX}-frontend."
+          FRONTEND_BUCKET="${FRONTEND_BUCKET_ARN#arn:aws:s3:::}"
+          none "$FRONTEND_BUCKET" && fail "S3 bucket com tag Name=${PREFIX}-frontend não encontrado."
 
-          DOMAIN_NAME=$(aws ssm get-parameter --name "$p/domain_name"                 --query 'Parameter.Value' --output text) \
-            || { echo "::error::Parâmetro SSM '$p/domain_name' não encontrado — execute 'terraform apply' primeiro."; exit 1; }
+          # CloudFront — identifica pela tag Name={prefix}-cdn
+          CF_ARN=$(aws resourcegroupstaggingapi get-resources \
+            --tag-filters "Key=Name,Values=${PREFIX}-cdn" \
+            --resource-type-filters "cloudfront:distribution" \
+            --query 'ResourceTagMappingList[0].ResourceARN' \
+            --output text) \
+            || fail "Erro ao buscar CloudFront com tag Name=${PREFIX}-cdn."
+          CLOUDFRONT_ID="${CF_ARN##*/}"
+          none "$CLOUDFRONT_ID" && fail "CloudFront com tag Name=${PREFIX}-cdn não encontrado."
 
-          INSTANCE_ID=$(aws ssm get-parameter --name "$p/ec2_instance_id"             --query 'Parameter.Value' --output text) \
-            || { echo "::error::Parâmetro SSM '$p/ec2_instance_id' não encontrado — execute 'terraform apply' primeiro."; exit 1; }
+          # Domain — lê dos aliases da distribuição CloudFront
+          DOMAIN_NAME=$(aws cloudfront get-distribution \
+            --id "$CLOUDFRONT_ID" \
+            --query 'Distribution.DistributionConfig.Aliases.Items[0]' \
+            --output text) \
+            || fail "Não foi possível obter o domain name do CloudFront $CLOUDFRONT_ID."
+          none "$DOMAIN_NAME" && fail "CloudFront $CLOUDFRONT_ID não possui aliases configurados."
 
-          SECRET_ARN=$(aws ssm get-parameter --name "$p/secrets_manager_arn"          --query 'Parameter.Value' --output text) \
-            || { echo "::error::Parâmetro SSM '$p/secrets_manager_arn' não encontrado — execute 'terraform apply' primeiro."; exit 1; }
+          # EC2 — tag Name={prefix}-backend, estado running
+          INSTANCE_ID=$(aws ec2 describe-instances \
+            --filters \
+              "Name=tag:Name,Values=${PREFIX}-backend" \
+              "Name=instance-state-name,Values=running" \
+            --query 'Reservations[0].Instances[0].InstanceId' \
+            --output text) \
+            || fail "Erro ao buscar instância EC2 '${PREFIX}-backend'."
+          none "$INSTANCE_ID" && fail "EC2 '${PREFIX}-backend' (running) não encontrada."
+
+          # Secrets Manager — nome: {prefix}/app-secrets
+          SECRET_ARN=$(aws secretsmanager list-secrets \
+            --filters "Key=name,Values=${PREFIX}/app-secrets" \
+            --query 'SecretList[0].ARN' \
+            --output text) \
+            || fail "Erro ao buscar secret '${PREFIX}/app-secrets'."
+          none "$SECRET_ARN" && fail "Secret '${PREFIX}/app-secrets' não encontrado."
 
           {
             echo "ecr_registry=$ECR_REGISTRY"
