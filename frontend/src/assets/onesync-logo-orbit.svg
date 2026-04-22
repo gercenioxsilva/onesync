@@ -4,6 +4,10 @@
       <stop stop-color="#1D4ED8"/>
       <stop offset="1" stop-color="#0EA5E9"/>
     </linearGradient>
+    <linearGradient id="textGrad" x1="76" y1="0" x2="210" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#38BDF8"/>
+    </linearGradient>
   </defs>
   <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#orbitA)"/>
   <circle cx="32" cy="32" r="13" fill="white" fill-opacity="0.95"/>
@@ -11,6 +15,6 @@
   <path d="M47 32C47 40.284 40.284 47 32 47" stroke="white" stroke-width="3" stroke-linecap="round"/>
   <circle cx="16" cy="32" r="3" fill="white"/>
   <circle cx="48" cy="32" r="3" fill="white"/>
-  <text x="76" y="28" fill="#0F172A" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">OneSync</text>
-  <text x="76" y="46" fill="#475569" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="11" font-weight="500">1:1 • PDI • AI Insights</text>
+  <text x="76" y="28" fill="url(#textGrad)" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="-0.3">OneSync</text>
+  <text x="76" y="46" fill="#7DD3FC" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="11" font-weight="500" letter-spacing="0.2">1:1 • PDI • AI Insights</text>
 </svg>
