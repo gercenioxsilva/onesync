@@ -89,7 +89,7 @@ resource "aws_security_group" "alb" {
 
 resource "aws_security_group" "ec2" {
   name        = "${local.prefix}-ec2-sg"
-  description = "EC2 backend: aceita tráfego apenas do ALB"
+  description = "EC2 backend: traffic from ALB only"
   vpc_id      = aws_vpc.main.id
 
   ingress {
@@ -103,7 +103,7 @@ resource "aws_security_group" "ec2" {
   dynamic "ingress" {
     for_each = var.ec2_key_pair_name != "" ? [1] : []
     content {
-      description = "SSH (apenas para debug — remova em prod)"
+      description = "SSH (debug only - remove in prod)"
       from_port   = 22
       to_port     = 22
       protocol    = "tcp"
