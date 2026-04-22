@@ -15,6 +15,7 @@ resource "aws_secretsmanager_secret_version" "app" {
     BOOTSTRAP_OWNER_EMAIL    = var.bootstrap_owner_email
     BOOTSTRAP_OWNER_PASSWORD = var.bootstrap_owner_password
     GOOGLE_CLIENT_ID         = var.google_client_id
+    SES_FROM_EMAIL           = var.ses_from_email
   })
 
   depends_on = [aws_db_instance.main]

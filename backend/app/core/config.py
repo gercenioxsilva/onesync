@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     people_source_dir: str = ""
     google_client_id: str = ""
     enable_schema_autocreate: bool = False
+    notifications_enabled: bool = True
+    ses_from_email: str = ""
+    ses_region: str = "us-east-1"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

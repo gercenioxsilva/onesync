@@ -65,6 +65,15 @@ resource "aws_iam_role_policy" "ec2_permissions" {
         Action = ["cloudwatch:PutMetricData"]
         Resource = "*"
       },
+      {
+        Sid    = "SESSendEmail"
+        Effect = "Allow"
+        Action = [
+          "ses:SendEmail",
+          "ses:SendRawEmail",
+        ]
+        Resource = "*"
+      },
     ]
   })
 }

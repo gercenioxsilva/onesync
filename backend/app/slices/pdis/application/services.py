@@ -1,6 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.email import notify_pdi
 from app.slices.collaborators.infrastructure.models import CollaboratorModel
 from app.slices.pdis.infrastructure.models import PdiModel
 
@@ -68,6 +69,15 @@ class PdiService:
         collaborator.pdi_status = self._collaborator_status_from_pdi(model.status)
         self.db.commit()
         self.db.refresh(model)
+
+        notify_pdi(
+            collaborator_email=collaborator.email,
+            collaborator_name=collaborator.name,
+            cycle=cycle,
+            objective=objective,
+            status=model.status,
+        )
+
         return model
 
     def list_by_collaborator(self, tenant_id: str, collaborator_id: str) -> list[PdiModel]:

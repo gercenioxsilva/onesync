@@ -3,6 +3,7 @@ from datetime import date
 from sqlalchemy import desc, select
 from sqlalchemy.orm import Session
 
+from app.core.email import notify_one_on_one
 from app.slices.collaborators.infrastructure.models import CollaboratorModel
 from app.slices.one_on_ones.domain.entities import OneOnOneSession
 from app.slices.one_on_ones.infrastructure.models import OneOnOneModel
@@ -51,6 +52,15 @@ class OneOnOneService:
         self.db.add(model)
         self.db.commit()
         self.db.refresh(model)
+
+        notify_one_on_one(
+            collaborator_email=collaborator.email,
+            collaborator_name=collaborator.name,
+            meeting_date=meeting_date,
+            next_steps=next_steps,
+            next_meeting_date=next_meeting_date,
+        )
+
         return model
 
     def list_by_collaborator(self, tenant_id: str, collaborator_id: str) -> list[OneOnOneModel]:
