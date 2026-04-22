@@ -207,7 +207,7 @@ jobs:
             -p 8000:8000 \
             --log-driver awslogs \
             --log-opt awslogs-region="$REGION" \
-            --log-opt awslogs-group=onesync-backend \
+            --log-opt awslogs-group=/onesync/mvp/backend \
             --log-opt awslogs-stream=ec2-backend \
             -e DATABASE_URL="$DATABASE_URL" \
             -e ENVIRONMENT=production \

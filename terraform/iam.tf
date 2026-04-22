@@ -49,11 +49,15 @@ resource "aws_iam_role_policy" "ec2_permissions" {
         Sid    = "CloudWatchLogs"
         Effect = "Allow"
         Action = [
+          "logs:CreateLogGroup",
           "logs:CreateLogStream",
           "logs:PutLogEvents",
           "logs:DescribeLogStreams",
         ]
-        Resource = "${aws_cloudwatch_log_group.backend.arn}:*"
+        Resource = [
+          aws_cloudwatch_log_group.backend.arn,
+          "${aws_cloudwatch_log_group.backend.arn}:*",
+        ]
       },
       {
         Sid    = "CloudWatchMetrics"
