@@ -39,35 +39,40 @@ jobs:
 
       # Todos os valores de infra são lidos do SSM Parameter Store,
       # populado pelo Terraform no terraform apply. Zero secrets extras.
+      #
+      # IMPORTANTE: VAR=$(cmd) é checado pelo set -e (falha o step se cmd falhar).
+      # echo "VAR=$(cmd)" NÃO é checado — set -e avalia o exit code do echo (sempre 0).
+      # Por isso cada parâmetro é atribuído numa linha separada antes do echo.
       - name: Discover infrastructure config from SSM
         id: config
         run: |
           p="/${PROJECT}/${ENVIRONMENT}"
 
-          # Falha explicitamente se o parâmetro não existir.
-          # Causa comum: 'terraform apply' ainda não foi executado com os
-          # novos recursos aws_ssm_parameter definidos em outputs.tf.
-          get() {
-            local name="${p}/${1}"
-            local val
-            if ! val=$(aws ssm get-parameter --name "$name" --query 'Parameter.Value' --output text 2>&1); then
-              echo "::error::SSM parameter '$name' não encontrado. Execute 'terraform apply' primeiro." >&2
-              exit 1
-            fi
-            if [ -z "$val" ]; then
-              echo "::error::SSM parameter '$name' está vazio." >&2
-              exit 1
-            fi
-            echo "$val"
-          }
+          ECR_REGISTRY=$(aws ssm get-parameter --name "$p/ecr_registry"                --query 'Parameter.Value' --output text) \
+            || { echo "::error::Parâmetro SSM '$p/ecr_registry' não encontrado — execute 'terraform apply' primeiro."; exit 1; }
+
+          FRONTEND_BUCKET=$(aws ssm get-parameter --name "$p/frontend_bucket"          --query 'Parameter.Value' --output text) \
+            || { echo "::error::Parâmetro SSM '$p/frontend_bucket' não encontrado — execute 'terraform apply' primeiro."; exit 1; }
+
+          CLOUDFRONT_ID=$(aws ssm get-parameter --name "$p/cloudfront_distribution_id" --query 'Parameter.Value' --output text) \
+            || { echo "::error::Parâmetro SSM '$p/cloudfront_distribution_id' não encontrado — execute 'terraform apply' primeiro."; exit 1; }
+
+          DOMAIN_NAME=$(aws ssm get-parameter --name "$p/domain_name"                 --query 'Parameter.Value' --output text) \
+            || { echo "::error::Parâmetro SSM '$p/domain_name' não encontrado — execute 'terraform apply' primeiro."; exit 1; }
+
+          INSTANCE_ID=$(aws ssm get-parameter --name "$p/ec2_instance_id"             --query 'Parameter.Value' --output text) \
+            || { echo "::error::Parâmetro SSM '$p/ec2_instance_id' não encontrado — execute 'terraform apply' primeiro."; exit 1; }
+
+          SECRET_ARN=$(aws ssm get-parameter --name "$p/secrets_manager_arn"          --query 'Parameter.Value' --output text) \
+            || { echo "::error::Parâmetro SSM '$p/secrets_manager_arn' não encontrado — execute 'terraform apply' primeiro."; exit 1; }
 
           {
-            echo "ecr_registry=$(get ecr_registry)"
-            echo "frontend_bucket=$(get frontend_bucket)"
-            echo "cloudfront_id=$(get cloudfront_distribution_id)"
-            echo "domain_name=$(get domain_name)"
-            echo "instance_id=$(get ec2_instance_id)"
-            echo "secret_arn=$(get secrets_manager_arn)"
+            echo "ecr_registry=$ECR_REGISTRY"
+            echo "frontend_bucket=$FRONTEND_BUCKET"
+            echo "cloudfront_id=$CLOUDFRONT_ID"
+            echo "domain_name=$DOMAIN_NAME"
+            echo "instance_id=$INSTANCE_ID"
+            echo "secret_arn=$SECRET_ARN"
           } >> "$GITHUB_OUTPUT"
 
       # ── Backend ────────────────────────────────────────────────────────────────
