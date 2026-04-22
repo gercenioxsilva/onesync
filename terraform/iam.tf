@@ -69,3 +69,9 @@ resource "aws_iam_instance_profile" "ec2" {
   name = "${local.prefix}-ec2-profile"
   role = aws_iam_role.ec2.name
 }
+
+# Permite que o SSM Agent registre e receba comandos (SSM Run Command / Session Manager)
+resource "aws_iam_role_policy_attachment" "ec2_ssm" {
+  role       = aws_iam_role.ec2.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}

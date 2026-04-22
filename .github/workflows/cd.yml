@@ -8,42 +8,55 @@ on:
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
   deploy:
-    if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' || github.event_name == 'workflow_dispatch' }}
+    if: >-
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main') ||
+       github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     concurrency:
       group: deploy-${{ github.ref_name }}
       cancel-in-progress: true
 
     env:
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-      FRONTEND_BUCKET: ${{ secrets.FRONTEND_BUCKET }}
-      CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
-      FRONTEND_API_URL: ${{ secrets.FRONTEND_API_URL }}
-      DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
-      EC2_SSH_HOST: ${{ secrets.EC2_SSH_HOST }}
-      EC2_SSH_USER: ${{ secrets.EC2_SSH_USER }}
-      AWS_SECRETSMANAGER_SECRET_ID: ${{ secrets.AWS_SECRETSMANAGER_SECRET_ID }}
+      AWS_REGION: us-east-1
+      PROJECT: onesync
+      ENVIRONMENT: mvp
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      # Todos os valores de infra são lidos do SSM Parameter Store,
+      # populado pelo Terraform no terraform apply. Zero secrets extras.
+      - name: Discover infrastructure config from SSM
+        id: config
+        run: |
+          p="/${PROJECT}/${ENVIRONMENT}"
+          get() { aws ssm get-parameter --name "${p}/${1}" --query 'Parameter.Value' --output text; }
+          {
+            echo "ecr_registry=$(get ecr_registry)"
+            echo "frontend_bucket=$(get frontend_bucket)"
+            echo "cloudfront_id=$(get cloudfront_distribution_id)"
+            echo "domain_name=$(get domain_name)"
+            echo "instance_id=$(get ec2_instance_id)"
+            echo "secret_arn=$(get secrets_manager_arn)"
+          } >> "$GITHUB_OUTPUT"
+
+      # ── Backend ────────────────────────────────────────────────────────────────
+
       - name: Login to ECR
-        uses: aws-actions/amazon-ecr-login@v1
-        with:
-          aws-region: ${{ env.AWS_REGION }}
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -55,88 +68,154 @@ jobs:
           file: backend/Dockerfile
           push: true
           tags: |
-            ${{ env.ECR_REGISTRY }}:latest
-            ${{ env.ECR_REGISTRY }}:${{ github.sha }}
+            ${{ steps.config.outputs.ecr_registry }}:latest
+            ${{ steps.config.outputs.ecr_registry }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Install Node.js for frontend
+      # ── Frontend ───────────────────────────────────────────────────────────────
+
+      - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Install frontend dependencies
-        run: npm install
+        run: npm ci
         working-directory: frontend
 
       - name: Build frontend
-        run: |
-          npm run build
+        run: npm run build
         working-directory: frontend
         env:
-          VITE_API_URL: ${{ env.FRONTEND_API_URL }}
+          VITE_API_URL: https://api.${{ steps.config.outputs.domain_name }}/api
 
-      - name: Deploy frontend build to S3
+      - name: Deploy frontend to S3
         run: |
-          aws s3 sync frontend/dist s3://${{ env.FRONTEND_BUCKET }} --delete
-        env:
-          AWS_REGION: ${{ env.AWS_REGION }}
+          aws s3 sync frontend/dist \
+            s3://${{ steps.config.outputs.frontend_bucket }} \
+            --delete
 
       - name: Invalidate CloudFront cache
         run: |
-          aws cloudfront create-invalidation --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} --paths '/*'
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ steps.config.outputs.cloudfront_id }} \
+            --paths '/*'
+
+      # ── EC2 restart via SSM Run Command (sem SSH, sem chave privada) ───────────
+
+      - name: Restart backend on EC2 via SSM Run Command
         env:
-          AWS_REGION: ${{ env.AWS_REGION }}
-
-      - name: Restart backend on EC2 (optional)
-        if: ${{ secrets.EC2_SSH_HOST != '' && secrets.EC2_SSH_PRIVATE_KEY != '' && secrets.AWS_SECRETSMANAGER_SECRET_ID != '' }}
+          INSTANCE_ID: ${{ steps.config.outputs.instance_id }}
+          SECRET_ARN: ${{ steps.config.outputs.secret_arn }}
+          ECR_REGISTRY: ${{ steps.config.outputs.ecr_registry }}
+          DOMAIN_NAME: ${{ steps.config.outputs.domain_name }}
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H "${{ secrets.EC2_SSH_HOST }}" >> ~/.ssh/known_hosts
+          # Escreve o script de restart usando heredoc literal (<<'ENDSCRIPT')
+          # para evitar expansão local. Os placeholders são substituídos por
+          # sed antes de enviar ao EC2, que os executa com sua IAM role.
+          cat > /tmp/restart-backend.sh <<'ENDSCRIPT'
+          #!/bin/bash
+          set -euo pipefail
 
-          SSH_USER="${{ secrets.EC2_SSH_USER }}"
-          if [ -z "$SSH_USER" ]; then
-            SSH_USER="ec2-user"
-          fi
+          SECRET_ARN="__SECRET_ARN__"
+          ECR_REGISTRY="__ECR_REGISTRY__"
+          DOMAIN_NAME="__DOMAIN_NAME__"
+          REGION="__REGION__"
 
-          ssh -i ~/.ssh/id_rsa "$SSH_USER@${{ secrets.EC2_SSH_HOST }}" <<EOF
-            set -euo pipefail
+          echo "=== Buscando secrets do Secrets Manager ==="
+          SECRETS=$(aws secretsmanager get-secret-value \
+            --secret-id "$SECRET_ARN" \
+            --region  "$REGION" \
+            --query SecretString --output text)
 
-            AWS_REGION="${AWS_REGION}"
-            ECR_REGISTRY="${ECR_REGISTRY}"
-            DOMAIN_NAME="${DOMAIN_NAME}"
-            SECRET_ID="${{ secrets.AWS_SECRETSMANAGER_SECRET_ID }}"
+          DATABASE_URL=$(echo "$SECRETS"       | jq -r .DATABASE_URL)
+          AUTH_SECRET_KEY=$(echo "$SECRETS"    | jq -r .AUTH_SECRET_KEY)
+          BOOTSTRAP_EMAIL=$(echo "$SECRETS"    | jq -r .BOOTSTRAP_OWNER_EMAIL)
+          BOOTSTRAP_PASSWORD=$(echo "$SECRETS" | jq -r .BOOTSTRAP_OWNER_PASSWORD)
+          GOOGLE_CLIENT_ID=$(echo "$SECRETS"   | jq -r .GOOGLE_CLIENT_ID)
 
-            echo "Fetching secrets from Secrets Manager..."
-            SECRETS=$(aws secretsmanager get-secret-value --secret-id "$SECRET_ID" --region "$AWS_REGION" --query SecretString --output text)
-            DATABASE_URL=$(echo "$SECRETS" | jq -r '.DATABASE_URL')
-            AUTH_SECRET_KEY=$(echo "$SECRETS" | jq -r '.AUTH_SECRET_KEY')
-            BOOTSTRAP_EMAIL=$(echo "$SECRETS" | jq -r '.BOOTSTRAP_OWNER_EMAIL')
-            BOOTSTRAP_PASSWORD=$(echo "$SECRETS" | jq -r '.BOOTSTRAP_OWNER_PASSWORD')
-            GOOGLE_CLIENT_ID=$(echo "$SECRETS" | jq -r '.GOOGLE_CLIENT_ID')
+          echo "=== Autenticando no ECR ==="
+          aws ecr get-login-password --region "$REGION" \
+            | docker login --username AWS --password-stdin "$ECR_REGISTRY"
 
-            AWS_ACCOUNT=$(echo "$ECR_REGISTRY" | cut -d'/' -f1)
-            aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com"
-            docker pull "$ECR_REGISTRY:latest"
-            docker rm -f onesync-backend || true
-            docker run -d \
-              --name onesync-backend \
-              --restart unless-stopped \
-              -p 8000:8000 \
-              --log-driver awslogs \
-              --log-opt awslogs-region="$AWS_REGION" \
-              --log-opt awslogs-group=onesync-backend \
-              --log-opt awslogs-stream=ec2-backend \
-              -e DATABASE_URL="$DATABASE_URL" \
-              -e ENVIRONMENT=production \
-              -e CORS_ORIGINS='["https://$DOMAIN_NAME","https://www.$DOMAIN_NAME"]' \
-              -e AUTH_SECRET_KEY="$AUTH_SECRET_KEY" \
-              -e AUTH_BOOTSTRAP_ENABLED=true \
-              -e AUTH_BOOTSTRAP_OWNER_EMAIL="$BOOTSTRAP_EMAIL" \
-              -e AUTH_BOOTSTRAP_OWNER_PASSWORD="$BOOTSTRAP_PASSWORD" \
-              -e AUTH_BOOTSTRAP_PLAN=FREE \
-              -e AUTH_BOOTSTRAP_IMPORT_COLLABORATORS=false \
-              -e ENABLE_SCHEMA_AUTOCREATE=false \
-              -e GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" \
-              "$ECR_REGISTRY:latest"
-          EOF
+          echo "=== Pulling nova imagem ==="
+          docker pull "$ECR_REGISTRY:latest"
+
+          echo "=== Recriando container ==="
+          docker rm -f onesync-backend || true
+          docker run -d \
+            --name onesync-backend \
+            --restart unless-stopped \
+            -p 8000:8000 \
+            --log-driver awslogs \
+            --log-opt awslogs-region="$REGION" \
+            --log-opt awslogs-group=onesync-backend \
+            --log-opt awslogs-stream=ec2-backend \
+            -e DATABASE_URL="$DATABASE_URL" \
+            -e ENVIRONMENT=production \
+            -e CORS_ORIGINS="[\"https://$DOMAIN_NAME\",\"https://www.$DOMAIN_NAME\"]" \
+            -e AUTH_SECRET_KEY="$AUTH_SECRET_KEY" \
+            -e AUTH_BOOTSTRAP_ENABLED=true \
+            -e AUTH_BOOTSTRAP_OWNER_EMAIL="$BOOTSTRAP_EMAIL" \
+            -e AUTH_BOOTSTRAP_OWNER_PASSWORD="$BOOTSTRAP_PASSWORD" \
+            -e AUTH_BOOTSTRAP_PLAN=FREE \
+            -e AUTH_BOOTSTRAP_IMPORT_COLLABORATORS=false \
+            -e ENABLE_SCHEMA_AUTOCREATE=false \
+            -e GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" \
+            "$ECR_REGISTRY:latest"
+
+          echo "=== Backend reiniciado com sucesso ==="
+          ENDSCRIPT
+
+          # Injeta os valores reais nos placeholders
+          sed -i \
+            -e "s|__SECRET_ARN__|${SECRET_ARN}|g" \
+            -e "s|__ECR_REGISTRY__|${ECR_REGISTRY}|g" \
+            -e "s|__DOMAIN_NAME__|${DOMAIN_NAME}|g" \
+            -e "s|__REGION__|${AWS_REGION}|g" \
+            /tmp/restart-backend.sh
+
+          # Empacota como JSON para o SSM
+          PARAMS=$(jq -n --arg script "$(cat /tmp/restart-backend.sh)" '{"commands":[$script]}')
+
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "$INSTANCE_ID" \
+            --document-name "AWS-RunShellScript" \
+            --timeout-seconds 300 \
+            --parameters "$PARAMS" \
+            --query 'Command.CommandId' \
+            --output text)
+
+          echo "SSM Command ID: $COMMAND_ID"
+
+          # Aguarda conclusão (poll a cada 10s, máx 5 min)
+          for i in $(seq 1 30); do
+            STATUS=$(aws ssm get-command-invocation \
+              --command-id "$COMMAND_ID" \
+              --instance-id "$INSTANCE_ID" \
+              --query 'Status' --output text 2>/dev/null || echo "Pending")
+            echo "[${i}/30] Status: $STATUS"
+            case "$STATUS" in
+              Success)
+                echo "--- STDOUT ---"
+                aws ssm get-command-invocation \
+                  --command-id "$COMMAND_ID" \
+                  --instance-id "$INSTANCE_ID" \
+                  --query 'StandardOutputContent' --output text
+                exit 0 ;;
+              Failed|Cancelled|TimedOut|Undeliverable|DeliveryTimedOut|ExecutionTimedOut)
+                echo "--- STDERR ---"
+                aws ssm get-command-invocation \
+                  --command-id "$COMMAND_ID" \
+                  --instance-id "$INSTANCE_ID" \
+                  --query 'StandardErrorContent' --output text >&2
+                exit 1 ;;
+            esac
+            sleep 10
+          done
+
+          echo "Timeout aguardando SSM command (5 min)." >&2
+          exit 1
