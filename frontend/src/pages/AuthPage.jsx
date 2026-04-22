@@ -15,7 +15,6 @@ import {
 } from '@mui/material'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthProvider'
-import authBackground from '../assets/onesync-auth-background.svg'
 import oneSyncLogo from '../assets/onesync-logo-orbit.svg'
 
 const initialLogin = {
@@ -123,9 +122,7 @@ export default function AuthPage() {
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'stretch',
-        backgroundImage: `linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.08)), url(${authBackground})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        background: 'linear-gradient(135deg, #0F172A 0%, #172554 50%, #0F766E 100%)',
       }}
     >
       <Container
