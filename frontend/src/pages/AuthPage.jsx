@@ -352,24 +352,27 @@ export default function AuthPage() {
                     {loading ? 'Entrando...' : 'Entrar com email e senha'}
                   </Button>
 
-                  <Divider>ou continue com</Divider>
-
-                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <GoogleLogin
-                      onSuccess={handleGoogleSuccess}
-                      onError={() =>
-                        setFeedback({
-                          severity: 'error',
-                          message: 'Falha ao autenticar com Google.',
-                        })
-                      }
-                      theme="outline"
-                      size="large"
-                      text="signin_with"
-                      locale="pt-BR"
-                      width="320"
-                    />
-                  </Box>
+                  {import.meta.env.VITE_GOOGLE_CLIENT_ID && (
+                    <>
+                      <Divider>ou continue com</Divider>
+                      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <GoogleLogin
+                          onSuccess={handleGoogleSuccess}
+                          onError={() =>
+                            setFeedback({
+                              severity: 'error',
+                              message: 'Falha ao autenticar com Google.',
+                            })
+                          }
+                          theme="outline"
+                          size="large"
+                          text="signin_with"
+                          locale="pt-BR"
+                          width="320"
+                        />
+                      </Box>
+                    </>
+                  )}
                 </Stack>
               ) : (
                 <Stack spacing={2}>
