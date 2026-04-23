@@ -108,7 +108,7 @@ const initialTenant = {
   owner_password: '',
 }
 
-export default function AuthPage() {
+export default function AuthPage({ googleClientId = '' }) {
   const navigate = useNavigate()
   const location = useLocation()
   const { isAuthenticated, login, loginGoogle, registerTenant } = useAuth()
@@ -352,7 +352,7 @@ export default function AuthPage() {
                     {loading ? 'Entrando...' : 'Entrar com email e senha'}
                   </Button>
 
-                  {import.meta.env.VITE_GOOGLE_CLIENT_ID && (
+                  {googleClientId && (
                     <>
                       <Divider>ou continue com</Divider>
                       <Box sx={{ display: 'flex', justifyContent: 'center' }}>

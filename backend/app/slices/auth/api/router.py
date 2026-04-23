@@ -8,6 +8,7 @@ from app.core.auth import (
     verify_google_id_token,
     verify_password,
 )
+from app.core.config import settings
 from app.core.database import get_db
 from app.slices.auth.api.schemas import (
     GoogleLoginRequest,
@@ -20,6 +21,11 @@ from app.slices.tenants.infrastructure.models import TenantModel
 from app.slices.users.infrastructure.models import UserModel
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
+
+
+@router.get("/config")
+def get_auth_config() -> dict:
+    return {"google_client_id": settings.google_client_id or ""}
 
 
 @router.post("/login", response_model=LoginResponse)

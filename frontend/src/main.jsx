@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
@@ -65,17 +65,26 @@ const theme = createTheme({
   },
 })
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+function App() {
+  const [googleClientId, setGoogleClientId] = useState('')
+
+  useEffect(() => {
+    fetch(`${API_URL}/auth/config`)
+      .then((r) => r.json())
+      .then((data) => setGoogleClientId(data.google_client_id || ''))
+      .catch(() => {})
+  }, [])
+
+  return (
+    <GoogleOAuthProvider clientId={googleClientId}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AuthProvider>
           <BrowserRouter>
             <Routes>
-              <Route path="/auth" element={<AuthPage />} />
+              <Route path="/auth" element={<AuthPage googleClientId={googleClientId} />} />
               <Route
                 element={
                   <ProtectedRoute>
@@ -99,5 +108,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         </AuthProvider>
       </ThemeProvider>
     </GoogleOAuthProvider>
+  )
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
   </React.StrictMode>
 )

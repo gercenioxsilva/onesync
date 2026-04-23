@@ -141,23 +141,11 @@ jobs:
         run: npm ci
         working-directory: frontend
 
-      - name: Fetch secrets for frontend build
-        id: frontend_secrets
-        env:
-          SECRET_ARN: ${{ steps.config.outputs.secret_arn }}
-        run: |
-          SECRETS=$(aws secretsmanager get-secret-value \
-            --secret-id "$SECRET_ARN" \
-            --query SecretString --output text)
-          GOOGLE_CLIENT_ID=$(echo "$SECRETS" | jq -r '.GOOGLE_CLIENT_ID // empty')
-          echo "google_client_id=$GOOGLE_CLIENT_ID" >> "$GITHUB_OUTPUT"
-
       - name: Build frontend
         run: npm run build
         working-directory: frontend
         env:
           VITE_API_URL: https://api.${{ steps.config.outputs.domain_name }}/api
-          VITE_GOOGLE_CLIENT_ID: ${{ steps.frontend_secrets.outputs.google_client_id }}
 
       - name: Deploy frontend to S3
         run: |
