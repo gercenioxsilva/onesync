@@ -41,12 +41,21 @@ export default function App() {
   const [googleClientId, setGoogleClientId] = useState(null)
 
   useEffect(() => {
+    const timeout = setTimeout(() => setGoogleClientId(''), 3000)
     fetch(`${API_URL}/auth/config`)
-      .then((r) => r.json())
-      .then((data) => setGoogleClientId(data.google_client_id || ''))
+      .then((r) => {
+        if (!r.ok) throw new Error('config unavailable')
+        return r.json()
+      })
+      .then((data) => {
+        const id = data.google_client_id
+        setGoogleClientId(id && id !== 'null' ? id : '')
+      })
       .catch(() => setGoogleClientId(''))
+      .finally(() => clearTimeout(timeout))
   }, [])
 
+  // Aguarda o fetch; se demorar >3s, libera o render sem SSO
   if (googleClientId === null) return null
 
   const routes = (

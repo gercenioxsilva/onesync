@@ -25,7 +25,10 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 @router.get("/config")
 def get_auth_config() -> dict:
-    return {"google_client_id": settings.google_client_id or ""}
+    client_id = settings.google_client_id
+    if not client_id or client_id == "null":
+        client_id = ""
+    return {"google_client_id": client_id}
 
 
 @router.post("/login", response_model=LoginResponse)
