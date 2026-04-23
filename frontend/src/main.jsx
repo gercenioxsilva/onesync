@@ -68,47 +68,55 @@ const theme = createTheme({
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
 
 function App() {
-  const [googleClientId, setGoogleClientId] = useState('')
+  // null = ainda carregando; '' = carregado sem client_id; string = client_id válido
+  const [googleClientId, setGoogleClientId] = useState(null)
 
   useEffect(() => {
     fetch(`${API_URL}/auth/config`)
       .then((r) => r.json())
       .then((data) => setGoogleClientId(data.google_client_id || ''))
-      .catch(() => {})
+      .catch(() => setGoogleClientId(''))
   }, [])
 
-  return (
-    <GoogleOAuthProvider clientId={googleClientId}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <AuthProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/auth" element={<AuthPage googleClientId={googleClientId} />} />
-              <Route
-                element={
-                  <ProtectedRoute>
-                    <Layout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route path="/" element={<DashboardPage />} />
-                <Route path="/collaborators" element={<CollaboratorsPage />} />
-                <Route path="/collaborators/:id" element={<CollaboratorDetailPage />} />
-                <Route path="/one-on-ones" element={<OneOnOnesPage />} />
-                <Route path="/pdis" element={<PdiPage />} />
-                <Route path="/actions" element={<ActionsPage />} />
-                <Route path="/okrs" element={<OKRsPage />} />
-                <Route path="/reports" element={<ReportsPage />} />
-                <Route path="/settings" element={<SettingsPage />} />
-              </Route>
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </BrowserRouter>
-        </AuthProvider>
-      </ThemeProvider>
-    </GoogleOAuthProvider>
+  // Aguarda o fetch antes de montar o GoogleOAuthProvider para que ele
+  // receba o clientId correto desde o primeiro mount (a biblioteca GSI
+  // não reinicializa quando a prop muda após o mount).
+  if (googleClientId === null) return null
+
+  const routes = (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/auth" element={<AuthPage googleClientId={googleClientId} />} />
+            <Route
+              element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/" element={<DashboardPage />} />
+              <Route path="/collaborators" element={<CollaboratorsPage />} />
+              <Route path="/collaborators/:id" element={<CollaboratorDetailPage />} />
+              <Route path="/one-on-ones" element={<OneOnOnesPage />} />
+              <Route path="/pdis" element={<PdiPage />} />
+              <Route path="/actions" element={<ActionsPage />} />
+              <Route path="/okrs" element={<OKRsPage />} />
+              <Route path="/reports" element={<ReportsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   )
+
+  if (!googleClientId) return routes
+
+  return <GoogleOAuthProvider clientId={googleClientId}>{routes}</GoogleOAuthProvider>
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
