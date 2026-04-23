@@ -96,6 +96,57 @@ def notify_one_on_one(
     _fire(collaborator_email, subject, html_body, text_body)
 
 
+def notify_new_collaborator(
+    collaborator_email: str,
+    collaborator_name: str,
+    company_name: str,
+) -> None:
+    if not collaborator_email:
+        return
+
+    subject = "[OneSync] Bem-vindo à plataforma"
+
+    html_body = f"""<!DOCTYPE html>
+<html lang="pt-BR">
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr><td align="center" style="padding:40px 16px;">
+      <table width="600" cellpadding="0" cellspacing="0" style="border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(15,23,42,.14);">
+        <tr>
+          <td style="background:linear-gradient(135deg,#0F172A,#172554);padding:32px 40px;">
+            <p style="margin:0;color:rgba(255,255,255,.6);font-size:12px;text-transform:uppercase;letter-spacing:1px;">OneSync</p>
+            <h1 style="margin:8px 0 0;color:#fff;font-size:24px;">Bem-vindo!</h1>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#fff;padding:32px 40px;">
+            <p style="margin:0 0 16px;font-size:16px;color:#1e293b;">Olá, <strong>{collaborator_name}</strong>!</p>
+            <p style="margin:0 0 24px;color:#475569;">
+              Você foi cadastrado na plataforma <strong>OneSync</strong> pela empresa <strong>{company_name}</strong>.
+            </p>
+            <p style="margin:0 0 24px;color:#475569;">
+              A partir de agora você receberá notificações sobre seus 1:1s e Plano de Desenvolvimento Individual (PDI) registrados pelo seu gestor.
+            </p>
+            <hr style="border:none;border-top:1px solid #e2e8f0;margin:0 0 24px;">
+            <p style="margin:0;font-size:12px;color:#94a3b8;">Você recebeu este email porque está cadastrado na plataforma OneSync.</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>"""
+
+    text_body = (
+        f"OneSync — Bem-vindo!\n\n"
+        f"Olá, {collaborator_name}!\n"
+        f"Você foi cadastrado na plataforma OneSync pela empresa {company_name}.\n\n"
+        f"A partir de agora você receberá notificações sobre seus 1:1s e PDI registrados pelo seu gestor."
+    )
+
+    _fire(collaborator_email, subject, html_body, text_body)
+
+
 def notify_pdi(
     collaborator_email: str,
     collaborator_name: str,

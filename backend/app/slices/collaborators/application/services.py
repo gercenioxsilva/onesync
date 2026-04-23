@@ -8,11 +8,13 @@ import unicodedata
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.email import notify_new_collaborator
 from app.slices.collaborators.domain.entities import RiskLevel
 from app.slices.collaborators.infrastructure.models import CollaboratorModel
 from app.slices.collaborators.infrastructure.repositories import CollaboratorRepository
 from app.slices.one_on_ones.infrastructure.models import OneOnOneModel
 from app.slices.pdis.infrastructure.models import PdiModel
+from app.slices.tenants.infrastructure.models import TenantModel
 
 
 class CollaboratorService:
@@ -239,7 +241,16 @@ class CollaboratorService:
             role=role.strip(),
             focus=focus.strip(),
         )
-        return self.repo.add(model)
+        saved = self.repo.add(model)
+
+        tenant = self.db.get(TenantModel, tenant_id)
+        notify_new_collaborator(
+            collaborator_email=saved.email,
+            collaborator_name=saved.name,
+            company_name=tenant.name if tenant else "",
+        )
+
+        return saved
 
     def import_from_csv(
         self,
