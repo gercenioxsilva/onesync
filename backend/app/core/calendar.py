@@ -1,6 +1,6 @@
+from datetime import date
 import logging
 import threading
-from datetime import date
 
 import requests
 

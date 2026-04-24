@@ -7,6 +7,7 @@ from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token as google_id_token
 import jwt
 from passlib.context import CryptContext
+import requests
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -72,13 +73,12 @@ def decode_access_token(token: str) -> dict:
 
 
 def exchange_google_auth_code(auth_code: str) -> dict:
-    import requests as _req
     if not settings.google_client_secret:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Google SSO não configurado no servidor",
         )
-    resp = _req.post(
+    resp = requests.post(
         "https://oauth2.googleapis.com/token",
         data={
             "code": auth_code,

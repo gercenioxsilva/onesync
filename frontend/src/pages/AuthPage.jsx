@@ -121,28 +121,8 @@ export default function AuthPage({ googleClientId = '' }) {
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [termsOpen, setTermsOpen] = useState(false)
 
-  if (isAuthenticated) {
-    return <Navigate to={location.state?.from?.pathname || '/'} replace />
-  }
-
   const finishLogin = () => {
     navigate(location.state?.from?.pathname || '/', { replace: true })
-  }
-
-  const handlePasswordLogin = async () => {
-    setLoading(true)
-    setFeedback(null)
-    try {
-      await login(loginForm.email, loginForm.password)
-      finishLogin()
-    } catch (error) {
-      setFeedback({
-        severity: 'error',
-        message: error?.response?.data?.detail || 'Falha no login.',
-      })
-    } finally {
-      setLoading(false)
-    }
   }
 
   const handleGoogleLogin = useGoogleLogin({
@@ -181,6 +161,26 @@ export default function AuthPage({ googleClientId = '' }) {
     onError: () =>
       setFeedback({ severity: 'error', message: 'Falha ao autenticar com Google.' }),
   })
+
+  if (isAuthenticated) {
+    return <Navigate to={location.state?.from?.pathname || '/'} replace />
+  }
+
+  const handlePasswordLogin = async () => {
+    setLoading(true)
+    setFeedback(null)
+    try {
+      await login(loginForm.email, loginForm.password)
+      finishLogin()
+    } catch (error) {
+      setFeedback({
+        severity: 'error',
+        message: error?.response?.data?.detail || 'Falha no login.',
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleRegisterTenant = async () => {
     setLoading(true)
