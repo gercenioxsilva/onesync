@@ -158,8 +158,7 @@ export default function AuthPage({ googleClientId = '' }) {
         setLoading(false)
       }
     },
-    onError: () =>
-      setFeedback({ severity: 'error', message: 'Falha ao autenticar com Google.' }),
+    onError: () => setFeedback({ severity: 'error', message: 'Falha ao autenticar com Google.' }),
   })
 
   if (isAuthenticated) {
