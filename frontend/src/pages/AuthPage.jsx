@@ -369,6 +369,7 @@ export default function AuthPage({ googleClientId = '' }) {
                           text="signin_with"
                           locale="pt-BR"
                           width="320"
+                          auto_select={false}
                         />
                       </Box>
                     </>

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { googleLogout } from '@react-oauth/google'
 import { authAPI } from '../api/client'
 
 const AuthContext = createContext(null)
@@ -53,6 +54,7 @@ export function AuthProvider({ children }) {
       },
       registerTenant: (payload) => authAPI.registerTenant(payload),
       logout: () => {
+        googleLogout()
         authAPI.logout()
         setSession(null)
         setCurrentUser(null)
