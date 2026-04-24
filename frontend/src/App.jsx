@@ -58,38 +58,38 @@ export default function App() {
   // Aguarda o fetch; se demorar >3s, libera o render sem SSO
   if (googleClientId === null) return null
 
-  const routes = (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/auth" element={<AuthPage googleClientId={googleClientId} />} />
-            <Route
-              element={
-                <ProtectedRoute>
-                  <Layout />
-                </ProtectedRoute>
-              }
-            >
-              <Route path="/" element={<DashboardPage />} />
-              <Route path="/collaborators" element={<CollaboratorsPage />} />
-              <Route path="/collaborators/:id" element={<CollaboratorDetailPage />} />
-              <Route path="/one-on-ones" element={<OneOnOnesPage />} />
-              <Route path="/pdis" element={<PdiPage />} />
-              <Route path="/actions" element={<ActionsPage />} />
-              <Route path="/okrs" element={<OKRsPage />} />
-              <Route path="/reports" element={<ReportsPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-            </Route>
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
-    </ThemeProvider>
+  // Always wrap with GoogleOAuthProvider so useGoogleLogin can be called unconditionally.
+  // When googleClientId is empty the Google button is hidden, so no real auth is triggered.
+  return (
+    <GoogleOAuthProvider clientId={googleClientId || 'no-client-id'}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/auth" element={<AuthPage googleClientId={googleClientId} />} />
+              <Route
+                element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route path="/" element={<DashboardPage />} />
+                <Route path="/collaborators" element={<CollaboratorsPage />} />
+                <Route path="/collaborators/:id" element={<CollaboratorDetailPage />} />
+                <Route path="/one-on-ones" element={<OneOnOnesPage />} />
+                <Route path="/pdis" element={<PdiPage />} />
+                <Route path="/actions" element={<ActionsPage />} />
+                <Route path="/okrs" element={<OKRsPage />} />
+                <Route path="/reports" element={<ReportsPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+              </Route>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
+      </ThemeProvider>
+    </GoogleOAuthProvider>
   )
-
-  if (!googleClientId) return routes
-
-  return <GoogleOAuthProvider clientId={googleClientId}>{routes}</GoogleOAuthProvider>
 }
