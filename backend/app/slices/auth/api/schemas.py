@@ -8,7 +8,7 @@ class LoginRequest(BaseModel):
 
 
 class GoogleLoginRequest(BaseModel):
-    id_token: str = Field(min_length=1)
+    auth_code: str = Field(min_length=1)
     tenant_cnpj: str | None = Field(default=None, min_length=14, max_length=18)
 
 

@@ -71,6 +71,32 @@ def decode_access_token(token: str) -> dict:
         ) from exc
 
 
+def exchange_google_auth_code(auth_code: str) -> dict:
+    import requests as _req
+    if not settings.google_client_secret:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Google SSO não configurado no servidor",
+        )
+    resp = _req.post(
+        "https://oauth2.googleapis.com/token",
+        data={
+            "code": auth_code,
+            "client_id": settings.google_client_id,
+            "client_secret": settings.google_client_secret,
+            "redirect_uri": "postmessage",
+            "grant_type": "authorization_code",
+        },
+        timeout=10,
+    )
+    if not resp.ok:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Falha ao trocar código Google por tokens",
+        )
+    return resp.json()
+
+
 def verify_google_id_token(token: str) -> dict:
     if not settings.google_client_id:
         raise HTTPException(

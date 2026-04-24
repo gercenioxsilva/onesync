@@ -95,6 +95,13 @@ variable "google_client_id" {
   sensitive   = true
 }
 
+variable "google_client_secret" {
+  description = "Google OAuth Client Secret (necessário para Calendar integration)"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
 variable "ses_from_email" {
   description = "Email verificado no SES usado como remetente das notificacoes"
   type        = string

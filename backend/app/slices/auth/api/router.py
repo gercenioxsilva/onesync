@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.core.auth import (
     create_access_token,
+    exchange_google_auth_code,
     hash_password,
     verify_google_id_token,
     verify_password,
@@ -61,10 +62,13 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 
 @router.post("/google", response_model=LoginResponse)
 def login_google(payload: GoogleLoginRequest, db: Session = Depends(get_db)):
-    google_payload = verify_google_id_token(payload.id_token)
+    tokens = exchange_google_auth_code(payload.auth_code)
+    google_payload = verify_google_id_token(tokens["id_token"])
+
     email = str(google_payload.get("email", "")).strip().lower()
     google_sub = str(google_payload.get("sub", "")).strip()
     name = str(google_payload.get("name", "Usuário Google")).strip()
+    refresh_token = tokens.get("refresh_token", "")
 
     if not email or not google_sub:
         raise HTTPException(
@@ -95,6 +99,7 @@ def login_google(payload: GoogleLoginRequest, db: Session = Depends(get_db)):
                 full_name=name,
                 email=email,
                 google_sub=google_sub,
+                google_refresh_token=refresh_token,
                 role="MEMBER",
                 password_hash="",
             )
@@ -127,6 +132,9 @@ def login_google(payload: GoogleLoginRequest, db: Session = Depends(get_db)):
         changed = True
     if user.full_name != name:
         user.full_name = name
+        changed = True
+    if refresh_token and user.google_refresh_token != refresh_token:
+        user.google_refresh_token = refresh_token
         changed = True
     if changed:
         db.add(user)

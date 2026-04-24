@@ -24,6 +24,8 @@ def create_one_on_one(
             payload.summary,
             payload.next_steps,
             payload.next_meeting_date,
+            manager_user_id=current_user.user_id,
+            manager_email=current_user.email,
         )
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc

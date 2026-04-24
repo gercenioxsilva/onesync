@@ -3,10 +3,12 @@ from datetime import date
 from sqlalchemy import desc, select
 from sqlalchemy.orm import Session
 
+from app.core.calendar import schedule_one_on_one_calendar_event
 from app.core.email import notify_one_on_one
 from app.slices.collaborators.infrastructure.models import CollaboratorModel
 from app.slices.one_on_ones.domain.entities import OneOnOneSession
 from app.slices.one_on_ones.infrastructure.models import OneOnOneModel
+from app.slices.users.infrastructure.models import UserModel
 
 
 class OneOnOneService:
@@ -22,6 +24,8 @@ class OneOnOneService:
         summary: str,
         next_steps: str,
         next_meeting_date: date | None,
+        manager_user_id: str = "",
+        manager_email: str = "",
     ) -> OneOnOneModel:
         collaborator = self.db.scalar(
             select(CollaboratorModel).where(
@@ -60,6 +64,18 @@ class OneOnOneService:
             next_steps=next_steps,
             next_meeting_date=next_meeting_date,
         )
+
+        if next_meeting_date and manager_user_id:
+            manager = self.db.get(UserModel, manager_user_id)
+            if manager and manager.google_refresh_token:
+                schedule_one_on_one_calendar_event(
+                    refresh_token=manager.google_refresh_token,
+                    manager_email=manager_email,
+                    collaborator_email=collaborator.email,
+                    collaborator_name=collaborator.name,
+                    next_meeting_date=next_meeting_date,
+                    summary=summary,
+                )
 
         return model
 

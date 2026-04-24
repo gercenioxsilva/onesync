@@ -190,8 +190,9 @@ jobs:
           AUTH_SECRET_KEY=$(echo "$SECRETS"    | jq -r .AUTH_SECRET_KEY)
           BOOTSTRAP_EMAIL=$(echo "$SECRETS"    | jq -r .BOOTSTRAP_OWNER_EMAIL)
           BOOTSTRAP_PASSWORD=$(echo "$SECRETS" | jq -r .BOOTSTRAP_OWNER_PASSWORD)
-          GOOGLE_CLIENT_ID=$(echo "$SECRETS"   | jq -r '.GOOGLE_CLIENT_ID // empty')
-          SES_FROM_EMAIL=$(echo "$SECRETS"     | jq -r '.SES_FROM_EMAIL // empty')
+          GOOGLE_CLIENT_ID=$(echo "$SECRETS"     | jq -r '.GOOGLE_CLIENT_ID // empty')
+          GOOGLE_CLIENT_SECRET=$(echo "$SECRETS" | jq -r '.GOOGLE_CLIENT_SECRET // empty')
+          SES_FROM_EMAIL=$(echo "$SECRETS"       | jq -r '.SES_FROM_EMAIL // empty')
 
           echo "=== Autenticando no ECR ==="
           aws ecr get-login-password --region "$REGION" \
@@ -217,6 +218,7 @@ jobs:
             -e AUTH_BOOTSTRAP_IMPORT_COLLABORATORS=false \
             -e ENABLE_SCHEMA_AUTOCREATE=true \
             -e GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" \
+            -e GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET" \
             -e SES_FROM_EMAIL="$SES_FROM_EMAIL" \
             -e NOTIFICATIONS_ENABLED=true \
             "$ECR_REGISTRY:latest"

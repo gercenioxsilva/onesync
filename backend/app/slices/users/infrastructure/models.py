@@ -19,6 +19,7 @@ class UserModel(Base):
     email: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     password_hash: Mapped[str] = mapped_column(String(255), default="")
     google_sub: Mapped[str] = mapped_column(String(255), default="", index=True)
+    google_refresh_token: Mapped[str] = mapped_column(String(512), default="")
     role: Mapped[str] = mapped_column(String(24), default="MEMBER")
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))

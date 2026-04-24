@@ -21,7 +21,8 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { GoogleLogin } from '@react-oauth/google'
+import { useGoogleLogin } from '@react-oauth/google'
+import GoogleIcon from '@mui/icons-material/Google'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthProvider'
 import oneSyncLogo from '../assets/onesync-logo-orbit.svg'
@@ -144,36 +145,42 @@ export default function AuthPage({ googleClientId = '' }) {
     }
   }
 
-  const handleGoogleSuccess = async (credentialResponse) => {
-    setLoading(true)
-    setFeedback(null)
-    try {
-      await loginGoogle(credentialResponse.credential)
-      finishLogin()
-    } catch (error) {
-      const detail = error?.response?.data?.detail
-      if (error?.response?.status === 404 && detail?.code === 'tenant_not_found') {
-        setTab(1)
-        setTermsAccepted(false)
-        setTenantForm((current) => ({
-          ...current,
-          owner_email: detail.email || '',
-          owner_name: detail.name || '',
-        }))
-        setFeedback({
-          severity: 'info',
-          message: `Conta Google identificada (${detail.email}). Complete o cadastro da sua empresa para acessar o OneSync.`,
-        })
-      } else {
-        setFeedback({
-          severity: 'error',
-          message: typeof detail === 'string' ? detail : 'Falha no login com Google.',
-        })
+  const handleGoogleLogin = useGoogleLogin({
+    flow: 'auth-code',
+    scope: 'openid email profile https://www.googleapis.com/auth/calendar.events',
+    onSuccess: async (codeResponse) => {
+      setLoading(true)
+      setFeedback(null)
+      try {
+        await loginGoogle(codeResponse.code)
+        finishLogin()
+      } catch (error) {
+        const detail = error?.response?.data?.detail
+        if (error?.response?.status === 404 && detail?.code === 'tenant_not_found') {
+          setTab(1)
+          setTermsAccepted(false)
+          setTenantForm((current) => ({
+            ...current,
+            owner_email: detail.email || '',
+            owner_name: detail.name || '',
+          }))
+          setFeedback({
+            severity: 'info',
+            message: `Conta Google identificada (${detail.email}). Complete o cadastro da sua empresa para acessar o OneSync.`,
+          })
+        } else {
+          setFeedback({
+            severity: 'error',
+            message: typeof detail === 'string' ? detail : 'Falha no login com Google.',
+          })
+        }
+      } finally {
+        setLoading(false)
       }
-    } finally {
-      setLoading(false)
-    }
-  }
+    },
+    onError: () =>
+      setFeedback({ severity: 'error', message: 'Falha ao autenticar com Google.' }),
+  })
 
   const handleRegisterTenant = async () => {
     setLoading(true)
@@ -355,23 +362,22 @@ export default function AuthPage({ googleClientId = '' }) {
                   {googleClientId && (
                     <>
                       <Divider>ou continue com</Divider>
-                      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <GoogleLogin
-                          onSuccess={handleGoogleSuccess}
-                          onError={() =>
-                            setFeedback({
-                              severity: 'error',
-                              message: 'Falha ao autenticar com Google.',
-                            })
-                          }
-                          theme="outline"
-                          size="large"
-                          text="signin_with"
-                          locale="pt-BR"
-                          width="320"
-                          auto_select={false}
-                        />
-                      </Box>
+                      <Button
+                        variant="outlined"
+                        size="large"
+                        startIcon={<GoogleIcon />}
+                        onClick={() => handleGoogleLogin()}
+                        disabled={loading}
+                        fullWidth
+                        sx={{
+                          textTransform: 'none',
+                          borderColor: '#dadce0',
+                          color: '#3c4043',
+                          '&:hover': { borderColor: '#c6c6c6', bgcolor: '#f8f9fa' },
+                        }}
+                      >
+                        Continuar com Google
+                      </Button>
                     </>
                   )}
                 </Stack>

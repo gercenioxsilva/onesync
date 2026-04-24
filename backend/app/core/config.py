@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     tracker_csv_path: str = "/data/01_TRACKER_TIME.csv"
     people_source_dir: str = ""
     google_client_id: str = ""
+    google_client_secret: str = ""
     enable_schema_autocreate: bool = False
     notifications_enabled: bool = True
     ses_from_email: str = ""
